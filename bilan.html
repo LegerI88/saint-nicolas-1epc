@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon rapport de fin de mission — Mission Saint-Nicolas (1EPC)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--rouge:#b3122e;--rouge2:#7e0c20;--or:#d9a521;--or2:#f6d56b;--nuit:#101d3a;--creme:#fff8ea;--creme2:#fdeccc;--vert:#2e7d4f;--bleu:#2563a8}
+*{box-sizing:border-box}
+body{margin:0;font-family:Fredoka,"Trebuchet MS",Verdana,sans-serif;background:radial-gradient(ellipse at top,#22386f 0%,var(--nuit) 60%) fixed;color:#2a1d12;line-height:1.45}
+header{background:linear-gradient(90deg,var(--rouge2),var(--rouge));color:#fff;padding:12px 16px;border-bottom:3px solid var(--or)}
+header h1{font-family:"Mountains of Christmas",Fredoka,cursive;margin:0;font-size:1.9em}
+header p{margin:2px 0 0;font-size:.85em;opacity:.95}
+main{max-width:1050px;margin:14px auto;padding:0 10px 50px}
+.card{background:var(--creme);border-radius:18px;padding:16px 18px;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);border:2px solid #f0d9a6}
+.card h2{margin-top:0;color:var(--rouge2)}
+label.f{display:block;font-weight:600;margin:6px 0 3px}
+input[type=text],textarea,select{font-family:inherit;font-size:1em;padding:7px 9px;border-radius:10px;border:2px solid #d9c29a;background:#fff;width:100%}
+textarea{min-height:52px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+table.t{border-collapse:collapse;width:100%;background:#fff;font-size:.9em}
+table.t th,table.t td{border:1px solid #e0c999;padding:6px;vertical-align:top;text-align:left}
+table.t th{background:var(--creme2)}
+.btn{font-family:inherit;font-size:1em;border:0;border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:600;background:var(--or);color:#3a2600;box-shadow:0 3px 0 #9b7413;text-decoration:none;display:inline-block}
+.btn.red{background:var(--rouge);color:#fff;box-shadow:0 3px 0 var(--rouge2)}
+.btn.green{background:var(--vert);color:#fff;box-shadow:0 3px 0 #1b4d30}
+.btn.ghost{background:#fff;color:var(--rouge);border:2px solid var(--rouge);box-shadow:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.cpro{display:inline-block;min-width:36px;text-align:center;border-radius:6px;padding:2px 6px;font-weight:700}
+.c-TI{background:#f8c9c9}.c-I{background:#fde2b3}.c-S{background:#cdebd6}.c-TS{background:#8fd3a7}.c-NE{background:#ddd}
+.smiley{display:flex;gap:4px;flex-wrap:wrap}
+.smiley label{background:#fff;border:2px solid #eedcb6;border-radius:10px;padding:3px 7px;cursor:pointer;font-size:.85em}
+.smiley input{margin-right:3px}
+.msg{border-radius:12px;padding:10px 14px;margin:10px 0;font-weight:600}
+.ok{background:#e8f6ee;border:2px solid #6dbb8c}.wa{background:#fff3cd;border:2px solid #e9b949}.ko{background:#fde8e8;border:2px solid #e58c8c}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-weight:700;color:#fff}
+.pD{background:#2e9d5b}.pI{background:#2563a8}.pE{background:#c0262f}
+.small{font-size:.82em;color:#6b5b45}
+footer{text-align:center;color:#cfd6ea;font-size:.78em;padding:14px}
+.big{font-size:1.25em}
+</style>
+</head>
+<body>
+<header><h1>📝 Mon rapport de fin de mission</h1><p>Mission Saint-Nicolas · CAP EPC · <span id="h-lycee"></span> · Professeur : <span id="h-prof"></span></p></header>
+<main id="main">
+  <div class="card" id="import-box"></div>
+  <div class="card"><h2>1. Identification</h2><div class="grid">
+    <div><label class="f" for="b-nom">Nom</label><input type="text" id="b-nom" autocomplete="family-name"></div>
+    <div><label class="f" for="b-prenom">Prénom</label><input type="text" id="b-prenom" autocomplete="given-name"></div>
+    <div><label class="f" for="b-classe">Classe</label><input type="text" id="b-classe" readonly></div>
+    <div><label class="f" for="b-date">Date</label><input type="text" id="b-date" readonly></div></div>
+    <p>Parcours (importé du carnet, non modifiable) : <span id="b-parcours"></span></p></div>
+  <div class="card"><h2>2. Mes missions</h2><p class="small">✅ validée · 🟠 commencée mais pas validée · ❌ pas faite. Tes bilans de mission sont repris automatiquement : tu peux les compléter.</p><div id="b-missions"></div></div>
+  <div class="card"><h2>3. Mes compétences</h2><p class="small">Pour chaque compétence, choisis ton auto-positionnement. Le positionnement proposé est calculé à partir de tes missions. La colonne « Validation du prof » est remplie par ton professeur.</p><div id="b-comps"></div></div>
+  <div class="card"><h2>4. Mon score</h2><div id="b-score" class="big"></div></div>
+  <div class="card"><h2>5. Mon PDF et l'envoi</h2>
+    <button class="btn red" id="btn-pdf">📄 Créer mon PDF</button>
+    <button class="btn green" id="btn-send">📤 Envoyer à mon prof</button>
+    <div id="b-msg"></div>
+    <hr><p class="small">Tes réponses sont gardées comme brouillon dans ce navigateur. Aucune donnée n'est envoyée ailleurs que sur le Nuage de ton professeur.</p>
+    <button class="btn ghost" id="btn-clear">🗑️ Effacer mes réponses</button> <a class="btn ghost" id="lnk-carnet" href="index.html">← Retour au carnet</a></div>
+</main>
+<footer id="foot"></footer>
+<input type="file" id="file-json" accept=".json,application/json" style="display:none">
+<script>
+/* ============================================================
+   DONNÉES DU SCÉNARIO « Mission Saint-Nicolas » — CAP EPC 1re année
+   Version 2 : enseigne = Destination Nancy – Office de Tourisme Métropolitain
+   Source unique : carnet interactif, bilan, dossier prof, carnet papier.
+   ============================================================ */
+(function (root) {
+const D = {};
+
+D.META = {
+  version: "2.2",
+  date: "23/11/2026",
+  scenario: "SAINT-NICOLAS",
+  titre: "Mission Saint-Nicolas",
+  sousTitre: "La grille d'or de la place Stanislas",
+  classe: "1EPC",
+  diplome: "CAP Équipier polyvalent du commerce (RNCP40994)",
+  blocs: "Blocs 1, 2 et 3 (BC01 · BC02 · BC03)",
+  lycee: "LP Marie Marvingt, Tomblaine",
+  prof: "Mme Isabelle LEGER",
+  enseigne: "Destination Nancy – Office de Tourisme Métropolitain, place Stanislas, 54000 Nancy",
+  enseigneCourt: "l'Office de Tourisme de Nancy",
+  lienDepot: "https://nuage15.apps.education.fr/index.php/s/2YWsXfwqkZmjtqC",
+  storageKey: "SNM_1EPC_carnet",
+  bilanKey: "SNM_1EPC_bilan",
+  consult: "23/11/2026"
+};
+
+/* ---------- Compétences (libellés exacts RNCP40994) ---------- */
+D.BLOCS = {
+  BC01: "Recevoir et suivre les commandes",
+  BC02: "Mettre en valeur et approvisionner",
+  BC03: "Conseiller et accompagner le client dans son parcours d'achat"
+};
+D.COMPETENCES = [
+  { id: "C1", bloc: "BC01", lib: "Réceptionner", missions: ["M1.1"], oral: false },
+  { id: "C2", bloc: "BC01", lib: "Stocker", missions: ["M1.2"], oral: false },
+  { id: "C3", bloc: "BC01", lib: "Préparer les commandes destinées aux clients", missions: ["M1.3"], oral: false },
+  { id: "C4", bloc: "BC02", lib: "Mettre en valeur les produits et l'espace commercial", missions: ["M2.1"], oral: false },
+  { id: "C5", bloc: "BC02", lib: "Installer et mettre à jour la signalétique", missions: ["M2.2"], oral: false },
+  { id: "C6", bloc: "BC02", lib: "Lutter contre la démarque et participer aux opérations d'inventaire", missions: ["M2.3"], oral: false },
+  { id: "C7", bloc: "BC03", lib: "Prendre contact avec le client", missions: ["M3.1"], oral: true },
+  { id: "C8", bloc: "BC03", lib: "Accompagner le parcours client dans un contexte omnicanal", missions: ["M3.2"], oral: false },
+  { id: "C9", bloc: "BC03", lib: "Finaliser la prise en charge du client", missions: ["M3.3"], oral: false },
+  { id: "C10", bloc: "BC03", lib: "Recevoir les réclamations courantes", missions: [], oral: true }
+];
+
+/* ---------- Univers ---------- */
+D.MENTOR = { nom: "Clémence Héré", role: "responsable de l'accueil et de la boutique", e: "👩‍💼" };
+D.POLES = [
+  { n: 1, nom: "La Réserve", emoji: "📦", badge: "Badge Gardien·ne de la Réserve", bloc: "BC01", couleur: "#1f4e79" },
+  { n: 2, nom: "La Boutique", emoji: "🎨", badge: "Badge Artiste de la Boutique", bloc: "BC02", couleur: "#7a1f5c" },
+  { n: 3, nom: "L'Accueil", emoji: "🛎️", badge: "Badge As de l'Accueil", bloc: "BC03", couleur: "#9c1c24" }
+];
+D.COMPAGNONS = [
+  { id: "ane", e: "🫏", n: "Bourrique", d: "l'âne fidèle de saint Nicolas" },
+  { id: "chat", e: "🐱", n: "Mirabelle", d: "la chatte dorée de la place" },
+  { id: "hibou", e: "🦉", n: "Stanislas", d: "le hibou perché sur la grille" },
+  { id: "renard", e: "🦊", n: "Lamour", d: "le renard qui adore l'or" }
+];
+D.EQUIPAGE = ["Inès, à la caisse", "Tom, à la réserve", "Yanis, à la vitrine", "Lou, à l'accueil", "Sacha, à la billetterie", "Maëlys, aux commandes en ligne", "Nolan, aux étiquettes", "Jade, à l'Arty Shop"];
+D.GRADES = [
+  { min: 0, n: "Apprenti·e lutin", e: "🧝" },
+  { min: 25, n: "Lutin de la réserve", e: "📦" },
+  { min: 50, n: "Gardien·ne de la grille", e: "🗝️" },
+  { min: 75, n: "Ambassadeur·rice de Nancy", e: "🎟️" },
+  { min: 90, n: "Bras droit de saint Nicolas", e: "👑" }
+];
+D.FRAG_NOM = "ornements de la grille d'or";
+
+/* ---------- Test d'orientation : le Grand Livre de saint Nicolas ---------- */
+D.SEUILS = { decouverteMax: 3, intermediaireMax: 7 }; // 0-3 D · 4-7 I · 8-10 E (seul endroit)
+D.SCANNER = [
+  { id: "s1", t: "qcm", comp: "C7", q: "Un touriste entre à l'Office de Tourisme. Que dis-tu en premier ?", opts: ["« Bonjour Monsieur ! »", "« Au revoir ! »", "« Suivant ! »"], ok: 0 },
+  { id: "s2", t: "qcm", comp: "C1", q: "Le livreur arrive avec des cartons pour la boutique. Quel document te fait-il signer ?", opts: ["Le bon de livraison", "Le ticket de caisse", "Le plan de la ville"], ok: 0 },
+  { id: "s3", t: "num", comp: "C3", q: "Une famille réserve 3 visites guidées à 10 € chacune. Combien doit-elle payer (en €) ?", ok: 30, tol: 0.001, unit: "€" },
+  { id: "s4", t: "qcm", comp: "C2", q: "Dans une réserve, où ranges-tu un carton très lourd ?", opts: ["En bas", "Tout en haut", "Sur le comptoir d'accueil"], ok: 0 },
+  { id: "s5", t: "qcm", comp: "C7", q: "Laquelle de ces questions est une question OUVERTE (le client répond par une phrase) ?", opts: ["« Que souhaitez-vous visiter à Nancy ? »", "« Vous voulez un plan ? »", "« C'est tout ? »"], ok: 0 },
+  { id: "s6", t: "num", comp: "C9", q: "Un achat coûte 12,50 €. Le client donne un billet de 20 €. Combien lui rends-tu (en €) ?", ok: 7.5, tol: 0.001, unit: "€" },
+  { id: "s7", t: "qcm", comp: "C2", q: "Sur un sachet de bonbons, tu lis « À consommer de préférence avant le 30/01/2027 ». Cette date s'appelle :", opts: ["la DDM (date de durabilité minimale)", "la DLC (date limite de consommation)", "la date de livraison"], ok: 0 },
+  { id: "s8", t: "num", comp: "C5", q: "Un sachet de 100 g coûte 8 €. Combien coûte 1 kg (1 000 g) de ce produit (en €) ?", ok: 80, tol: 0.001, unit: "€/kg" },
+  { id: "s9", t: "num", comp: "C5", q: "Un mug coûte 12 € TTC. La TVA est de 20 %. Prix HT = prix TTC ÷ 1,20. Quel est le prix HT (en €) ?", ok: 10, tol: 0.001, unit: "€" },
+  { id: "s10", t: "text", comp: "C7", q: "Écris une phrase pour accueillir un visiteur ET lui proposer ton aide.", kw: [["bonjour", "bonsoir", "bienvenue"], ["aider", "aide", "renseigner", "conseiller", "puis-je", "je peux", "cherchez", "besoin", "service"]], min: 2, modele: "Bonjour Madame, bienvenue à l'Office de Tourisme ! Je peux vous aider ?" }
+];
+
+/* ---------- Ressources ---------- */
+D.RESSOURCES = [
+{ n: 1, titre: "L'enseigne : Destination Nancy – Office de Tourisme Métropolitain", html: `
+<p><b>Adresse :</b> place Stanislas, 54000 Nancy (locaux du XVIIIe siècle, ensemble classé UNESCO) · <b>Tél.</b> 03 83 35 80 10 · contact@destination-nancy.com</p>
+<p><b>Horaires d'ouverture au public :</b> lundi 13 h – 18 h 30 · du mardi au dimanche 9 h 30 – 18 h 30. Fermé les 25 décembre et 1er janvier.<br><span class="warn">⚠ Un document de 2025 indique aussi une fermeture les dimanches du 24 décembre au 31 mars : <b>à vérifier</b> pour cet hiver.</span></p>
+<ul>
+<li><b>Deux espaces boutique</b> : la boutique de souvenirs (cartes postales, objets, produits gourmands, artisanat régional) et l'<b>Arty Shop</b>, dédié aux créations d'artisans d'art du Grand Est.</li>
+<li><b>Services</b> : informations touristiques, <b>visites guidées</b> (réservation obligatoire), visites audioguidées, <b>Nancy City Pass</b>, vente de produits souvenirs.</li>
+<li><b>Accueil de tous</b> : l'Office détient la marque <b>Tourisme &amp; Handicap</b> et propose des visites adaptées ; accueil téléphonique des personnes sourdes ou malentendantes (Acceo).</li>
+<li><b>Omnicanal</b> : site nancy-tourisme.fr traduit en anglais, allemand et néerlandais (+ une version japonaise) ; <b>billetterie en ligne</b> visites.nancy-tourisme.fr (e-City Pass, visites) ; certains produits de la boutique sont aussi vendus en ligne.</li>
+<li>Pendant les Fêtes, la boutique se met aux couleurs de saint Nicolas : polaires, bonnets, chaussettes, mugs… à l'effigie du saint patron de la Lorraine.</li>
+</ul>
+<p class="src">Sources : nancy-tourisme.fr (pages « Venir à l'office », « The Tourist Office Boutique », « 10 bonnes raisons ») ; Guide Tourisme &amp; Handicap 2025-2026 ; tourisme-handicaps.org (journées 2026) ; francevelotourisme.com ; destination-nancy.com (« L'Office aux couleurs de Saint-Nicolas »). Consultés le 23/11/2026.</p>` },
+{ n: 2, titre: "Les Fêtes de Saint-Nicolas 2026 à Nancy", html: `
+<ul>
+<li>Du <b>vendredi 20 novembre 2026 au dimanche 3 janvier 2027</b>.</li>
+<li><b>Grand défilé : samedi 5 décembre 2026</b>, en fin d'après-midi, jusqu'à la place Stanislas. Grand week-end les 5 et 6 décembre.</li>
+<li>Le Grand Village de Saint-Nicolas (place Charles III) : plus de 65 chalets. Vidéo-mapping sur l'hôtel de ville, place Stanislas.</li>
+<li>Saint Nicolas est le saint patron de la Lorraine et le protecteur des enfants. Il est souvent représenté avec son âne et le Père Fouettard.</li>
+<li>Les <b>grilles dorées</b> qui ferment les angles de la place Stanislas sont l'œuvre du ferronnier Jean Lamour (XVIIIe siècle).</li>
+</ul>
+<p class="warn">⚠ Heure de départ et parcours du défilé 2026 : non publiés au 23/11/2026 → à vérifier sur saint-nicolas.nancy.fr.</p>
+<p class="src">Sources : saint-nicolas.nancy.fr (repris par festivalenfrance.com, jds.fr, info-lux.com, onivapp.com) ; nancy-tourisme.fr (place Stanislas, patrimoine UNESCO). Consultés le 23/11/2026.</p>` },
+{ n: 3, titre: "Le catalogue de la boutique et de l'accueil (prix réels)", html: `
+<table class="t"><tr><th>Produit ou service</th><th>Détail</th><th>Prix TTC</th></tr>
+<tr><td>Coffret « AvAnt Saint-Nicolas » (calendrier de l'Avent, 2e édition)</td><td>15 boîtes illustrées : produits artisanaux et spécialités gourmandes, dont des macarons et des bonbons à la mirabelle</td><td>49,00 €</td></tr>
+<tr><td>Boule de Noël « Papillote » — CERFAV</td><td>verre, édition Saint-Nicolas</td><td>49,00 €</td></tr>
+<tr><td>Boule de Noël Art nouveau en émaux de Longwy</td><td>faïence</td><td>49,00 €</td></tr>
+<tr><td>Création « Verre'tige » — Souffle de Vie</td><td>verre</td><td>39,00 €</td></tr>
+<tr><td>Visite thématique « Sur les traces de Saint-Nicolas »</td><td>vieille ville, réservation obligatoire</td><td>10,00 €</td></tr>
+<tr><td>Visite guidée « Centre historique »</td><td>réservation obligatoire</td><td>10,00 €</td></tr>
+<tr><td>Nancy City Pass 24 h — Adulte</td><td>musées, transports, 1 visite guidée…</td><td>20,00 €</td></tr>
+<tr><td>Nancy City Pass 24 h — Duo</td><td>pour 2 personnes</td><td>35,00 €</td></tr>
+<tr><td>Nancy City Pass 24 h — Jeunes (moins de 26 ans)</td><td>justificatif d'identité</td><td>10,00 €</td></tr>
+</table>
+<p><b>Le City Pass 24 h comprend</b> notamment : l'entrée gratuite dans les musées et monuments de la Métropole, une visite guidée et un audioguide (réservation obligatoire), les trajets illimités en bus et tram, le City Guide, un trajet en petit train et des réductions chez des partenaires.</p>
+<p><b>Produits sans prix publié</b> (prix <b>à vérifier</b> en boutique) : mugs, polaires, bonnets, chaussettes, magnets, pin's, stylos, porte-clés à l'effigie de saint Nicolas.</p>
+<div class="warn">⚠ <b>Prix d'entraînement RECONSTITUÉS</b> (inventés pour les exercices, car non publiés) : mug Saint-Nicolas <b>14,90 €</b> · magnet Saint-Nicolas <b>4,50 €</b> · sachet de bonbons à la mirabelle 150 g <b>6,90 €</b>.</div>
+<p><b>Allergènes</b> : la composition détaillée du coffret n'est pas publiée. Les macarons de Nancy sont faits avec des amandes (fruits à coque) : <b>lire l'étiquette</b> de chaque produit avant de conseiller un client allergique.</p>
+<p class="src">Sources : La Gazette France, « Saint-Nicolas s'invite à la boutique de la place Stanislas Destination Nancy », 14/10/2026 ; nancy-tourisme.fr (fiches visites « Sur les traces de Saint-Nicolas » et « Centre historique », tarif plein 10 €) ; visites.nancy-tourisme.fr (e-City Pass 24 h) ; destination-nancy.com. Consultés le 23/11/2026. Prix et stocks du jour à vérifier.</p>` },
+{ n: 4, titre: "Réceptionner une livraison", html: `
+<ol>
+<li>Vérifier que la livraison est bien pour l'Office (nom, adresse).</li>
+<li><b>Devant le livreur</b> : compter les colis et contrôler leur état (carton enfoncé, mouillé, ouvert, bruit de verre cassé…).</li>
+<li>Comparer le <b>bon de livraison</b> (ce qui arrive) au <b>bon de commande</b> (ce qu'on a demandé) : références, quantités.</li>
+<li>Écrire les <b>réserves</b> sur le bon de livraison : <b>claires et précises</b> (quoi, combien, quel état). « Sous réserve de déballage » ne veut rien dire.</li>
+<li>Signer, dater, garder un double. Ranger ensuite les produits.</li>
+</ol>
+<div class="def"><b>Réserve</b> : remarque écrite sur le bon de livraison qui signale un problème (manquant, produit abîmé).</div>
+<div class="law">📜 <b>Code de commerce, article L133-3</b> : si un dommage ou une perte partielle n'a pas été signalé, le destinataire a <b>3 jours</b> (jours fériés non compris) après le jour de la réception pour envoyer au transporteur une <b>protestation motivée</b> par <b>lettre recommandée</b> (ou acte d'huissier).</div>
+<p class="src">Sources : Légifrance, Code de commerce art. L133-3 ; cms.law (« réserves claires et précises »). Consultés le 23/11/2026.</p>` },
+{ n: 5, titre: "Stocker : dates, rotation, sécurité", html: `
+<table class="t"><tr><th>Mention sur l'emballage</th><th>Nom</th><th>Que faire ?</th></tr>
+<tr><td>« À consommer jusqu'au… »</td><td><b>DLC</b> — date limite de consommation</td><td>Date impérative : produit dépassé = <b>retiré de la vente</b>.</td></tr>
+<tr><td>« À consommer de préférence avant… »</td><td><b>DDM</b> — date de durabilité minimale</td><td>Après la date, le produit peut perdre du goût ou de la texture mais reste consommable.</td></tr></table>
+<div class="def"><b>FIFO</b> (First In, First Out) = premier <b>entré</b>, premier sorti.<br><b>FEFO</b> (First Expired, First Out) = premier <b>périmé</b>, premier sorti : on sort d'abord le lot qui a la date la plus proche.</div>
+<ul><li>Ranger : <b>lourd en bas</b>, produits utilisés souvent à <b>hauteur des mains</b>, léger et peu utilisé en haut. Allées dégagées.</li>
+<li>Objets fragiles (boules en verre, faïence) : rangés <b>dans leur calage</b>, jamais empilés sans protection ni au bord d'une étagère.</li>
+<li>Produits gourmands : respecter la conservation indiquée sur l'étiquette (ex. « à l'abri de l'humidité »).</li></ul>
+<div class="law">📜 <b>Code du travail, art. R4541-9</b> : les femmes ne sont pas autorisées à porter des charges de plus de <b>25 kg</b>. Pour les hommes, au-delà de 55 kg il faut un avis d'aptitude du médecin du travail.</div>
+<p><b>Bons gestes :</b> s'approcher de la charge, <b>plier les jambes</b>, garder le <b>dos droit</b>, tenir la charge <b>près du corps</b>, ne pas se tordre ; utiliser un <b>chariot / diable</b> ou porter à deux.</p>
+<p class="src">Sources : economie.gouv.fr/DGCCRF (DLC et DDM) ; Légifrance, Code du travail art. R4541-9 ; INRS (manutention manuelle) ; Inserm, fiche manutention. Consultés le 23/11/2026.</p>` },
+{ n: 6, titre: "Préparer une commande client", html: `
+<ol><li>Lire le <b>bon de préparation</b> : n° de commande, nom du client, articles et billets, quantités, date de retrait.</li>
+<li><b>Prélever</b> les articles (en FEFO pour les produits datés) ; imprimer ou préparer les billets de visite et les pass.</li>
+<li><b>Contrôler</b> : bonne référence, bonne quantité, bon état, bonne date de visite.</li>
+<li><b>Emballer</b> : lourd en bas, <b>fragile calé</b> (papier bulle, calage), billets dans une enveloppe à part.</li>
+<li><b>Étiqueter</b> le paquet (nom + n° de commande) et le ranger en zone de retrait, derrière l'accueil.</li></ol>
+<p>Problème (article manquant, cassé) ? <b>On prévient sa responsable</b> et on <b>contacte le client</b> pour proposer une solution. On ne remplace jamais un produit sans son accord.</p>
+<p>Allergies : vérifier la composition sur l'étiquette (→ Ressource 3).</p>` },
+{ n: 7, titre: "Mettre en valeur : vitrine et merchandising", html: `
+<ul><li><b>Un seul thème</b> clair par vitrine (ici : le défilé de Saint-Nicolas). Vitrine <b>propre</b>, éclairée, renouvelée.</li>
+<li>Les produits visibles de la rue doivent avoir un <b>prix lisible de l'extérieur</b> (→ Ressource 8).</li>
+<li>Protéger les produits fragiles : le verre et la faïence ne se posent jamais au bord d'une étagère ou à portée de chute.</li></ul>
+<table class="t"><tr><th>Niveau de présentation</th><th>Effet</th></tr>
+<tr><td>Niveau du chapeau (au-dessus de la tête)</td><td>Peu vu</td></tr>
+<tr><td><b>Niveau des yeux</b></td><td><b>Le plus vu : celui qui vend le plus</b></td></tr>
+<tr><td>Niveau des mains</td><td>Facile à prendre</td></tr>
+<tr><td>Niveau du sol</td><td>Peu vu, produits lourds</td></tr></table>
+<div class="def"><b>Facteurs d'ambiance</b> : ce qui agit sur les 5 sens du client — vue (lumière, couleurs), ouïe (musique), odorat (parfum), toucher (matières), goût (dégustation).</div>
+<p><b>Achat d'impulsion</b> : achat non prévu, décidé sur place (souvent des petits prix près de la caisse : magnets, pin's).</p>` },
+{ n: 8, titre: "Signalétique : prix, TVA, promotions, allergènes", html: `
+<div class="law">📜 <b>Prix</b> : indiqué <b>en euros, TTC</b>, sur le produit ou juste à côté ; le client doit le connaître <b>sans le demander</b>. Produit visible de l'extérieur → prix lisible de l'extérieur. (Code de la consommation L112-1 ; arrêté du 3 décembre 1987 — Service-Public, fiche F34344.)</div>
+<p><b>Prix à l'unité de mesure</b> (prix au kilo) : obligatoire en plus du prix de vente pour la plupart des produits alimentaires <b>préemballés</b>.</p>
+<div class="formule">Prix au kilo = prix de vente ÷ poids en kg &nbsp;(150 g = 0,150 kg)</div>
+<div class="formule">Prix HT = prix TTC ÷ (1 + taux de TVA) &nbsp;·&nbsp; TVA = prix TTC − prix HT</div>
+<p><b>Taux de TVA</b> : <b>20 %</b> (taux normal) pour les objets souvenirs (mugs, magnets…) et pour les <b>confiseries</b> (bonbons) ; 5,5 % pour la plupart des produits alimentaires (BOFiP, impots.gouv.fr).</p>
+<div class="law">📜 <b>Réduction de prix</b> : l'affichage indique la réduction et le <b>prix de référence</b> = le <b>prix le plus bas pratiqué au cours des 30 jours</b> avant la promotion (Code de la consommation L112-1-1, DGCCRF).</div>
+<div class="formule">Prix réduit = prix de référence × (1 − taux de réduction) &nbsp; ex. −20 % → × 0,80</div>
+<div class="law">📜 <b>Allergènes</b> d'un produit vendu <b>sans emballage</b> : information obligatoire <b>par écrit</b>, à proximité du produit (décret n° 2015-447 du 17 avril 2015).</div>
+<p class="src">Sources : entreprendre.service-public.gouv.fr F34344 (MAJ 02/07/2024) ; economie.gouv.fr/DGCCRF « Annonces de réduction de prix » ; bofip.impots.gouv.fr (BOI-TVA-LIQ-30-10-10) ; décret 2015-447 (Légifrance). Consultés le 23/11/2026.</p>` },
+{ n: 9, titre: "Démarque et inventaire", html: `
+<div class="def"><b>Démarque</b> : perte de marchandises (en quantité ou en valeur).<br><b>Démarque connue</b> : on sait ce qui est perdu et pourquoi, c'est enregistré (casse, produit périmé retiré, produit abîmé).<br><b>Démarque inconnue</b> : on constate un manque sans savoir pourquoi (vol, erreur de caisse, erreur de livraison non vue).</div>
+<div class="formule">Stock théorique = stock initial + entrées − sorties (ventes + casse enregistrée)</div>
+<div class="formule">Écart = stock réel (compté) − stock théorique &nbsp;·&nbsp; Taux = écart ÷ stock théorique × 100</div>
+<div class="def"><b>Inventaire</b> : comptage réel de tous les produits présents à une date donnée.</div>
+<p><b>Lutter contre la démarque</b> : saluer chaque visiteur, petits produits sous le regard du personnel, contrôler les livraisons, réserve fermée, enregistrer la casse, vérifier ses encaissements.</p>` },
+{ n: 10, titre: "Accueillir le visiteur", html: `
+<p><b>La règle des 4 temps (SBAM)</b> : Sourire · Bonjour · Au revoir · Merci.</p>
+<ol><li>Sourire, regarder le visiteur.</li><li>Saluer : « Bonjour Madame / Monsieur ».</li><li>Se rendre disponible (poser ce qu'on fait).</li><li>Découvrir le besoin avec une <b>question ouverte</b>.</li><li>Écouter, puis <b>reformuler</b> : « Si j'ai bien compris, vous cherchez… ».</li></ol>
+<table class="t"><tr><th>Question ouverte</th><th>Question fermée</th></tr><tr><td>Le client répond par une phrase : « Qu'aimeriez-vous découvrir à Nancy ? »</td><td>Le client répond oui / non : « C'est pour aujourd'hui ? »</td></tr></table>
+<p>Déjà occupé·e ? Un <b>signe, un sourire</b> et « Je suis à vous dans un instant ». Visiteur qui « regarde » : le laisser regarder, rester disponible.</p>
+<p>Touristes étrangers : le site de l'Office existe en anglais, allemand, néerlandais et japonais (→ Ressource 1). « Hello, welcome! Can I help you? »</p>` },
+{ n: 11, titre: "Conseiller dans un parcours omnicanal", html: `
+<div class="def"><b>Méthode CAP</b> : <b>C</b>aractéristique (ce qu'est le produit) → <b>A</b>vantage (ce que ça apporte au client) → <b>P</b>reuve (ce qui le prouve : chiffre, comparaison, démonstration).</div>
+<p>Exemple : « Le City Pass 24 h Duo est valable pour 2 personnes (C) : vous visitez sans compter et vous circulez en tram gratuitement (A). Il coûte 35 € au lieu de 40 € pour 2 pass adultes (P). »</p>
+<p><b>Vente complémentaire</b> : proposer un produit qui va avec l'achat (un souvenir de la boutique après une visite).</p>
+<div class="def"><b>Omnicanal</b> : le client passe d'un canal à l'autre (accueil, site, téléphone) : acheter son e-City Pass ou réserver sa visite sur visites.nancy-tourisme.fr, puis venir à l'accueil le jour J.</div>
+<p><b>Réservation obligatoire</b> pour les visites guidées, dans la limite des places : on ne promet jamais une place sans vérifier.</p>
+<p><b>Allergies</b> : on ne promet jamais « aucun risque ». On lit l'étiquette avec le client.</p>` },
+{ n: 12, titre: "Encaisser et fidéliser", html: `
+<ul>
+<li><b>Espèces</b> : en principe, un commerçant <b>ne peut pas les refuser</b> (amende de 150 €). Il peut refuser un paiement de <b>plus de 50 pièces</b>. Plafond : <b>1 000 €</b> en espèces pour un client domicilié en France.</li>
+<li><b>Carte bancaire et chèque</b> : le commerçant peut les refuser ou fixer un montant minimum, <b>à condition de l'afficher</b> clairement.</li>
+<li><b>Ticket de caisse</b> : depuis le <b>1er août 2023</b>, il n'est plus imprimé automatiquement mais remis <b>si le client le demande</b>. Une affiche doit l'indiquer près de la caisse.</li>
+</ul>
+<div class="formule">Monnaie à rendre = somme donnée − montant à payer</div>
+<p><b>Rendre la monnaie</b> : annoncer le total, annoncer la somme reçue, compter la monnaie en remontant jusqu'à la somme donnée.</p>
+<p><b>Clôture de caisse</b> : comparer l'argent compté et le montant enregistré (fond de caisse + encaissements). Écart = compté − attendu.</p>
+<div class="law">📜 <b>Fidélisation et RGPD</b> : pour envoyer des publicités par e-mail à un particulier, il faut son <b>accord préalable (consentement)</b>. On ne collecte que les données utiles (CNIL).</div>
+<p class="src">Sources : service-public.gouv.fr (F10999 paiement en espèces, vérifié le 26/06/2026 ; F22929) ; economie.gouv.fr (moyens de paiement ; DGCCRF ticket de caisse) ; cnil.fr (« RGPD en pratique : maîtrisez votre relation client »). Consultés le 23/11/2026.</p>` },
+{ n: 13, titre: "Recevoir une réclamation", html: `
+<ol><li><b>Accueillir</b> calmement, à l'écart si possible.</li><li><b>Écouter</b> sans couper.</li><li><b>Reformuler</b> : « Si je comprends bien, la boule était fêlée à l'ouverture de la boîte ».</li><li><b>S'excuser</b> pour la gêne, sans accuser personne.</li><li><b>Proposer une solution</b> selon la règle de l'Office (échange, avoir, remboursement) ou passer le relais à la responsable.</li><li><b>Conclure</b> : vérifier que le client est satisfait, remercier, saluer.</li></ol>
+<div class="law">📜 En magasin, reprendre ou rembourser un produit qui plaît moins <b>n'est pas une obligation</b> (c'est un geste commercial). Mais si le produit est <b>défectueux</b>, le client peut faire jouer la <b>garantie légale de conformité</b>. Le délai de rétractation de 14 jours concerne les achats <b>à distance</b> (internet), pas les achats en boutique.</div>
+<p class="src">Sources : inc-conso.fr (« Puis-je exiger le remboursement d'un produit acheté dans un magasin ? ») ; service-public.gouv.fr ; Code de la consommation L221-18. Consultés le 23/11/2026.</p>` }
+];
+
+/* ---------- Annexes ---------- */
+D.ANNEXES = [
+{ id: "A", titre: "Bon de commande et bon de livraison (M1.1)", html: `
+<p class="warn">⚠ RECONSTITUÉ : commande et livraison inventées pour l'exercice (produits et prix réels).</p>
+<table class="t"><tr><th>Article</th><th>Commandé (bon de commande n° OT-1205)</th><th>Livré (bon de livraison)</th><th>Observation à l'arrivée</th></tr>
+<tr><td>Coffret « AvAnt Saint-Nicolas »</td><td>30</td><td>30</td><td>RAS</td></tr>
+<tr><td>Boule de Noël « Papillote » CERFAV</td><td>12</td><td>12</td><td>1 colis cabossé : bruit de verre, 1 boule cassée</td></tr>
+<tr><td>Création « Verre'tige »</td><td>10</td><td>8</td><td>—</td></tr>
+<tr><td>Mug Saint-Nicolas</td><td>24</td><td>24</td><td>RAS</td></tr>
+</table><p>Livraison du <b>lundi 7 décembre 2026</b>. Total commandé : 76 articles.</p>` },
+{ id: "B", titre: "Fiche des lots en réserve (M1.2)", html: `
+<p class="warn">⚠ RECONSTITUÉ : lots et dates inventés.</p>
+<table class="t"><tr><th>Lot</th><th>Produit</th><th>Reçu le</th><th>DDM</th><th>Sachets</th></tr>
+<tr><td>A</td><td>Bonbons à la mirabelle 150 g</td><td>02/11/2026</td><td>31/03/2027</td><td>24</td></tr>
+<tr><td>B</td><td>Bonbons à la mirabelle 150 g</td><td>16/11/2026</td><td>30/01/2027</td><td>12</td></tr>
+<tr><td>C</td><td>Bonbons à la mirabelle 150 g</td><td>23/11/2026</td><td>30/06/2027</td><td>24</td></tr></table>` },
+{ id: "C", titre: "Bon de préparation n° WEB-0412 (M1.3)", html: `
+<p class="warn">⚠ RECONSTITUÉ : cliente et commande inventées. Prix réels (→ Ressource 3).</p>
+<p>Cliente : Mme Léonie Hartmann · Retrait à l'accueil : vendredi 4 décembre 2026 · Remarque : « mon fils est allergique aux fruits à coque ».</p>
+<table class="t"><tr><th>Article</th><th>Qté</th><th>Prix unitaire TTC</th></tr>
+<tr><td>Coffret « AvAnt Saint-Nicolas »</td><td>2</td><td>49,00 €</td></tr>
+<tr><td>Boule de Noël Art nouveau, émaux de Longwy</td><td>1</td><td>49,00 €</td></tr>
+<tr><td>Billet visite « Sur les traces de Saint-Nicolas » (samedi 5/12)</td><td>2</td><td>10,00 €</td></tr>
+<tr><td>Nancy City Pass 24 h Duo</td><td>1</td><td>35,00 €</td></tr></table>` },
+{ id: "D", titre: "Photo-description de la vitrine (M2.1)", html: `
+<p class="warn">⚠ RECONSTITUÉ : vitrine imaginée après le passage du Père Fouettard.</p>
+<ol><li>Décor rouge et or sur le thème du défilé de Saint-Nicolas.</li><li>Les coffrets « AvAnt Saint-Nicolas » sont posés à hauteur des yeux.</li><li>Aucun prix n'est visible depuis la place.</li><li>La vitre est couverte de traces de doigts et de poussière.</li><li>Les boules de Noël en verre sont posées en équilibre au bord d'une étagère, sans calage.</li></ol>` },
+{ id: "E", titre: "Étiquettes à refaire (M2.2)", html: `
+<p class="warn">⚠ RECONSTITUÉ : les prix du sachet et du mug sont des prix d'entraînement ; la promotion −20 % est inventée. Le prix de la création Verre'tige est réel.</p>
+<table class="t"><tr><th>Produit</th><th>Poids</th><th>Prix TTC</th><th>Prix au kg</th><th>Prix HT (TVA 20 %)</th></tr>
+<tr><td>Sachet de bonbons à la mirabelle</td><td>150 g</td><td>6,90 €</td><td>?</td><td>—</td></tr>
+<tr><td>Mug Saint-Nicolas</td><td>—</td><td>14,90 €</td><td>—</td><td>?</td></tr>
+<tr><td>Création « Verre'tige » — promo −20 % (prix le plus bas sur 30 jours : 39,00 €)</td><td>—</td><td>?</td><td>—</td><td>?</td></tr></table>` },
+{ id: "F", titre: "Fiche de stock des magnets Saint-Nicolas (M2.3)", html: `
+<p class="warn">⚠ RECONSTITUÉ : mouvements de stock inventés ; prix d'entraînement 4,50 € le magnet.</p>
+<table class="t"><tr><th>Date</th><th>Mouvement</th><th>Magnets</th></tr>
+<tr><td>01/12</td><td>Stock initial</td><td>40</td></tr>
+<tr><td>02/12</td><td>Entrée (livraison)</td><td>+24</td></tr>
+<tr><td>01/12 → 06/12</td><td>Ventes enregistrées en caisse</td><td>−35</td></tr>
+<tr><td>04/12</td><td>Casse enregistrée (magnets brisés)</td><td>−2</td></tr>
+<tr><td>06/12</td><td><b>Inventaire : magnets comptés</b></td><td><b>23</b></td></tr></table>` },
+{ id: "G", titre: "Grille d'accueil (M3.1)", html: `
+<table class="t"><tr><th>Étape</th><th>Ce que je fais / je dis</th></tr><tr><td>Contact</td><td>Sourire, regard, « Bonjour… »</td></tr><tr><td>Disponibilité</td><td>…</td></tr><tr><td>Découverte</td><td>Question ouverte : …</td></tr><tr><td>Reformulation</td><td>« Si j'ai bien compris… »</td></tr></table>` },
+{ id: "H", titre: "Fiche conseil : la famille Weber (M3.2)", html: `
+<p class="warn">⚠ RECONSTITUÉ : clients inventés.</p>
+<p>M. et Mme Weber, touristes de Strasbourg, passent <b>une journée</b> à Nancy le samedi 5 décembre. Ils veulent visiter <b>des musées</b>, se déplacer <b>en tram</b> et suivre <b>une visite guidée</b>. Budget pour les visites : <b>40 € maximum</b> pour les deux. Ils aimeraient aussi rapporter <b>un souvenir</b>.</p>` },
+{ id: "I", titre: "Caisse du samedi 5 décembre (M3.3)", html: `
+<p class="warn">⚠ RECONSTITUÉ : montants de caisse inventés ; newsletter de fidélité imaginée pour l'exercice. Prix réels.</p>
+<table class="t"><tr><th>Article</th><th>Qté</th><th>Prix TTC</th></tr><tr><td>Coffret « AvAnt Saint-Nicolas »</td><td>1</td><td>49,00 €</td></tr><tr><td>Billet visite « Sur les traces de Saint-Nicolas »</td><td>2</td><td>10,00 €</td></tr></table>
+<p>Le client paie avec un billet de <b>100 €</b>.</p>
+<p>Clôture du soir : fond de caisse du matin <b>150,00 €</b> · ventes en espèces enregistrées <b>412,60 €</b> · argent compté le soir <b>560,10 €</b>.</p>` },
+{ id: "J", titre: "Fiche réclamation (mission finale)", html: `
+<p class="warn">⚠ RECONSTITUÉ : situation inventée.</p>
+<p>Samedi 5 décembre, 16 h. Un client revient, mécontent : la <b>boule de Noël « Papillote »</b> achetée la veille était <b>fêlée</b> en sortant de sa boîte. C'était un cadeau pour sa mère, ce soir, après le défilé.</p>
+<table class="t"><tr><th>Étape</th><th>Ma phrase</th></tr><tr><td>1. Accueillir</td><td></td></tr><tr><td>2. Écouter / reformuler</td><td></td></tr><tr><td>3. M'excuser</td><td></td></tr><tr><td>4. Proposer une solution</td><td></td></tr><tr><td>5. Conclure</td><td></td></tr></table>` }
+];
+
+/* ---------- Missions ---------- */
+D.MISSIONS = [
+{ id: "M1.1", pole: 1, emoji: "🚚", titre: "Le traîneau de livraison est arrivé !", etoiles: 2, duree: 25, ressources: [4, 3], annexe: "A", comp: "C1",
+  fragment: { e: "🌀", n: "La volute dorée" },
+  mentor: "Le livreur klaxonne déjà sur la place Stanislas ! Le Père Fouettard a mélangé les cartons de la boutique. Avant de signer quoi que ce soit, on contrôle tout.",
+  consignes: ["Lis la Ressource 4.", "Observe l'Annexe A ligne par ligne.", "Réponds aux questions de chaque partie.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Avant de signer", qs: [
+      { id: "q1", t: "qcm", q: "Choisis ce que tu fais AVANT de signer le bon de livraison.", opts: ["Je compte les colis et je contrôle leur état devant le livreur.", "Je signe tout de suite pour ne pas le retarder.", "Je range les colis en réserve et je vérifierai demain."], ok: 0, dropD: 2 },
+      { id: "q2", t: "order", q: "Remets les étapes de la réception dans l'ordre.", items: ["Vérifier que la livraison est bien pour l'Office", "Compter les colis et contrôler leur état", "Comparer le bon de livraison au bon de commande", "Écrire les réserves sur le bon de livraison, puis signer", "Ranger les produits en réserve"] }
+    ]},
+    { t: "Partie 2 — Le contrôle (Annexe A)", qs: [
+      { id: "q3", t: "num", q: "Calcule le nombre de créations « Verre'tige » manquantes.", ok: 2, tol: 0.001, unit: "articles", amorce: "Commandé − livré = 10 − 8 = …" },
+      { id: "q4", t: "num", q: "Calcule la valeur TTC des créations « Verre'tige » manquantes (prix de vente 39,00 € l'une).", ok: 78, tol: 0.01, unit: "€", amorce: "2 × 39,00 = …" },
+      { id: "q5", t: "qcm", q: "Un colis de boules « Papillote » est cabossé et une boule est cassée. Choisis la bonne réserve.", opts: ["« 1 colis cabossé, 1 boule Papillote cassée. 2 Verre'tige manquantes. »", "« Sous réserve de déballage. »", "Je n'écris rien, c'est un petit dégât."], ok: 0, dropD: 2 }
+    ]},
+    { t: "Partie 3 — Après la livraison", qs: [
+      { id: "q6", t: "text", q: "Le lendemain, tu découvres un dégât que tu n'avais pas vu. Écris ce qu'il faut faire et dans quel délai.", kw: [["recommande", "lrar", "acte", "huissier", "courrier recommande"], ["3 jours", "trois jours", "3 j", "72"], ["transporteur", "livreur", "protestation", "voiturier", "reclamation"]], min: 2,
+        modele: "Envoyer au transporteur une protestation motivée par lettre recommandée dans les 3 jours (jours fériés non compris).",
+        alt: { q: "Le lendemain, tu découvres un dégât que tu n'avais pas vu. Choisis ce qu'il faut faire.", opts: ["Envoyer au transporteur une protestation motivée par lettre recommandée dans les 3 jours.", "Attendre la prochaine livraison pour en parler.", "Rien : une fois signé, il n'y a plus aucun recours."], ok: 0, dropD: 1 } },
+      { id: "q7", t: "qcm", q: "Choisis le document à comparer au bon de livraison pour savoir si tout ce que l'Office a demandé est arrivé.", opts: ["Le bon de commande", "Le ticket de caisse", "Le plan de la ville"], ok: 0, dropD: 2 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Livraison le lundi 7 décembre 2026, aucun jour férié dans la semaine. Calcule la date (le jour du mois) limite pour envoyer la protestation motivée.", ok: 10, tol: 0.001, unit: "décembre" },
+    { id: "e2", t: "num", q: "🔴 Calcule le taux de conformité de la livraison : (articles commandés − manquants − abîmés) ÷ articles commandés × 100. Arrondis à l'unité.", ok: 96, tol: 0.5, unit: "%" }
+  ],
+  aides: { indice: "Compare les colonnes « Commandé » et « Livré » de l'Annexe A, puis relis l'encadré 📜 de la Ressource 4.", methode: "1) Ligne par ligne : commandé − livré = manquant. 2) Toute différence ou tout dégât = une réserve écrite sur le bon de livraison. 3) Une réserve dit QUOI, COMBIEN, QUEL ÉTAT.", amorce: "Pour l'écrit : « J'envoie au … une protestation … par lettre … dans les … jours. »" },
+  retiens: ["Je contrôle devant le livreur AVANT de signer.", "Une réserve est précise : quoi, combien, quel état.", "Dégât découvert après : protestation motivée par lettre recommandée sous 3 jours (fériés non compris)."]
+},
+{ id: "M1.2", pole: 1, emoji: "🏰", titre: "La réserve sous la place", etoiles: 2, duree: 25, ressources: [5], annexe: "B", comp: "C2",
+  fragment: { e: "🗝️", n: "La clé de la grille" },
+  mentor: "Le Père Fouettard a tout entassé n'importe comment dans la réserve ! Range-la pour que les bons sachets partent en premier… sans casser une seule boule de verre, et sans te faire mal au dos.",
+  consignes: ["Lis la Ressource 5.", "Observe les dates de l'Annexe B.", "Classe, range et choisis.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Les dates", qs: [
+      { id: "q1", t: "qcm", q: "Sur le sachet de bonbons à la mirabelle : « À consommer de préférence avant le… ». Choisis le nom de cette date.", opts: ["DDM — date de durabilité minimale", "DLC — date limite de consommation", "Date de fabrication"], ok: 0, dropD: 2 },
+      { id: "q2", t: "qcm", q: "Un produit a une DLC (« à consommer jusqu'au… ») dépassée. Choisis la bonne réponse.", opts: ["On le retire de la vente.", "On le vend avec une réduction.", "On le vend s'il a l'air bon."], ok: 0, dropD: 2 },
+      { id: "q3", t: "order", q: "Classe les lots de l'Annexe B dans l'ordre de sortie avec la méthode FEFO (premier périmé, premier sorti).", items: ["Lot B (DDM 30/01/2027)", "Lot A (DDM 31/03/2027)", "Lot C (DDM 30/06/2027)"] },
+      { id: "q4", t: "qcm", q: "Avec la méthode FIFO (premier ENTRÉ, premier sorti), choisis le lot qui sort en premier.", opts: ["Lot A (reçu le 02/11)", "Lot B (reçu le 16/11)", "Lot C (reçu le 23/11)"], ok: 0, dropD: 2 }
+    ]},
+    { t: "Partie 2 — Ranger en sécurité", qs: [
+      { id: "q5", t: "cls", q: "Range chaque produit au bon endroit.", cats: ["En bas", "À hauteur des mains", "En haut"], items: [
+        { l: "Carton de 30 coffrets « AvAnt Saint-Nicolas » (lourd)", c: 0 },
+        { l: "City Guides distribués toute la journée", c: 1 },
+        { l: "Guirlandes de rechange pour janvier (légères)", c: 2 },
+        { l: "Carton de 24 mugs (lourd)", c: 0 } ] },
+      { id: "q6", t: "qcm", q: "Choisis comment ranger les boules de Noël en verre.", opts: ["Dans leur calage, à l'abri des chocs.", "Empilées les unes sur les autres pour gagner de la place.", "Au sol, dans l'allée, pour aller plus vite."], ok: 0, dropD: 2 },
+      { id: "q7", t: "text", q: "Le carton de coffrets pèse 18 kg. Écris 2 bons gestes pour le soulever sans te blesser.", kw: [["dos droit", "dos bien droit", "dos plat", "garder le dos"], ["plier", "plie", "flechi", "flechir", "genou", "jambe"], ["pres du corps", "contre moi", "proche du corps", "contre le corps", "colle au corps"], ["chariot", "diable", "a deux", "2 personnes", "aide"]], min: 2,
+        modele: "Je plie les jambes et je garde le dos droit, je tiens le carton près du corps (ou j'utilise un chariot).",
+        alt: { q: "Le carton pèse 18 kg. Choisis les bons gestes.", opts: ["Plier les jambes, garder le dos droit, tenir le carton près du corps (ou prendre un chariot).", "Se pencher dos rond, jambes tendues, bras tendus.", "Le soulever d'un coup sec pour aller plus vite."], ok: 0, dropD: 2 } }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Tu dois sortir 30 sachets en FEFO (Annexe B : lot B = 12 sachets, lot A = 24, lot C = 24). Calcule combien de sachets tu prends dans le lot A.", ok: 18, tol: 0.001, unit: "sachets" },
+    { id: "e2", t: "qcm", q: "🔴 Une collègue doit déplacer seule un carton de 28 kg. Choisis ce que dit le Code du travail (Ressource 5).", opts: ["Les femmes ne sont pas autorisées à porter plus de 25 kg : il faut un chariot ou alléger le carton.", "C'est autorisé jusqu'à 55 kg pour tout le monde.", "C'est autorisé si elle met des gants."], ok: 0 }
+  ],
+  aides: { indice: "Regarde la colonne DDM de l'Annexe B : quelle date arrive en premier ?", methode: "FEFO : on trie par DATE (la plus proche sort d'abord). FIFO : on trie par DATE DE RÉCEPTION. Rangement : lourd en bas, souvent utilisé à hauteur des mains, léger en haut ; fragile dans son calage.", amorce: "Pour l'écrit : « Je plie les … et je garde le … ; je tiens le carton … »" },
+  retiens: ["DLC = « à consommer jusqu'au » : dépassée → retirée de la vente. DDM = « de préférence avant ».", "FEFO : la date la plus proche sort en premier. FIFO : le premier arrivé sort en premier.", "Lourd en bas, fragile calé ; jambes pliées, dos droit, charge près du corps ; chariot si besoin."]
+},
+{ id: "M1.3", pole: 1, emoji: "📦", titre: "La commande de la veille du défilé", etoiles: 3, duree: 25, ressources: [6, 3], annexe: "C", comp: "C3",
+  fragment: { e: "🎁", n: "Le paquet d'or" },
+  mentor: "Une cliente a commandé en ligne et passera chercher sa commande à l'accueil vendredi, la veille du défilé. Prépare-la sans aucune erreur !",
+  consignes: ["Lis la Ressource 6.", "Utilise le bon de préparation (Annexe C).", "Calcule, contrôle, emballe.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Le bon de préparation", qs: [
+      { id: "q1", t: "num", q: "Calcule le nombre total d'articles et de billets à préparer.", ok: 6, tol: 0.001, unit: "articles", amorce: "2 + 1 + 2 + 1 = …" },
+      { id: "q2", t: "num", q: "Calcule le montant total TTC de la commande.", ok: 202, tol: 0.011, unit: "€", amorce: "(2 × 49,00) + 49,00 + (2 × 10,00) + 35,00 = …" },
+      { id: "q3", t: "qcm", q: "Le fils de la cliente est allergique aux fruits à coque. Choisis l'article dont il faut vérifier l'étiquette avec elle (Ressource 3).", opts: ["Le coffret « AvAnt Saint-Nicolas » (il contient des macarons et des bonbons)", "Le City Pass 24 h Duo", "La boule de Noël en émaux de Longwy"], ok: 0, dropD: 2 }
+    ]},
+    { t: "Partie 2 — Préparer et emballer", qs: [
+      { id: "q4", t: "text", q: "Il ne reste qu'un seul coffret « AvAnt Saint-Nicolas » au lieu de 2. Écris ce que tu fais.", kw: [["responsable", "cheffe", "chef", "clemence", "previen", "informe", "patron"], ["cliente", "client", "appel", "contact", "telephon", "mail", "sms"], ["remplac", "propos", "solution", "autre", "choix", "accord", "rembours"]], min: 2,
+        modele: "Je préviens ma responsable, puis on contacte la cliente pour lui proposer une solution (un seul coffret et le remboursement de l'autre, ou un autre produit).",
+        alt: { q: "Il ne reste qu'un seul coffret au lieu de 2. Choisis ce que tu fais.", opts: ["Je préviens ma responsable et on contacte la cliente pour lui proposer une solution.", "Je mets un autre produit dans le paquet sans rien dire.", "J'enlève la ligne de la commande en silence."], ok: 0, dropD: 1 } },
+      { id: "q5", t: "order", q: "Remets la préparation de commande dans l'ordre.", items: ["Lire le bon de préparation", "Prélever les articles et préparer les billets", "Contrôler référence, quantité, état et date de visite", "Emballer en protégeant la boule en faïence", "Étiqueter le paquet et le ranger en zone de retrait"] },
+      { id: "q6", t: "qcm", q: "La boule de Noël en émaux de Longwy est fragile. Choisis comment tu l'emballes.", opts: ["Dans sa boîte, calée avec du papier bulle, rien de lourd dessus.", "Au fond du sac, sous les deux coffrets.", "Sans boîte, pour que la cliente la voie mieux."], ok: 0, dropD: 2 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 La cliente remplace son City Pass Duo par 2 City Pass 24 h Adulte (20,00 € l'un). Calcule le nouveau total TTC de la commande.", ok: 207, tol: 0.011, unit: "€" },
+    { id: "e2", t: "num", q: "🔴 Calcule l'économie qu'elle faisait avec le City Pass Duo par rapport à 2 pass Adulte.", ok: 5, tol: 0.011, unit: "€" }
+  ],
+  aides: { indice: "Utilise les quantités ET les prix de l'Annexe C. Pour les allergènes, relis la ligne du coffret dans la Ressource 3.", methode: "Pour chaque ligne : quantité × prix unitaire. Puis additionne les lignes. Un problème ? Je ne décide pas seul·e : responsable + client.", amorce: "Pour l'écrit : « Je préviens ma … , puis on contacte la … pour lui proposer … »" },
+  retiens: ["Préparer = lire, prélever, contrôler, emballer, étiqueter.", "Total = somme des (quantité × prix unitaire).", "Un produit manque ? Responsable + client, jamais de remplacement sans accord.", "Allergies : je vérifie la composition écrite."]
+},
+{ id: "M2.1", pole: 2, emoji: "🎨", titre: "La vitrine du défilé", etoiles: 2, duree: 25, ressources: [7, 8], annexe: "D", comp: "C4",
+  fragment: { e: "⭐", n: "L'étoile de la vitrine" },
+  mentor: "Samedi, des milliers de familles passeront devant l'Office après le défilé. Le Père Fouettard a saboté la vitrine : à toi de la rendre magique !",
+  consignes: ["Lis la Ressource 7.", "Observe la vitrine décrite en Annexe D.", "Repère les erreurs et propose des améliorations.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — L'ambiance", qs: [
+      { id: "q1", t: "cls", q: "Associe chaque élément d'ambiance au sens du client qu'il touche.", cats: ["Vue", "Ouïe", "Odorat", "Toucher", "Goût"], items: [
+        { l: "Guirlandes lumineuses dorées", c: 0 }, { l: "Musique douce de Noël, à faible volume", c: 1 }, { l: "Parfum de pain d'épices", c: 2 }, { l: "Polaires et bonnets doux à prendre en main", c: 3 }, { l: "Dégustation d'un bonbon à la mirabelle", c: 4 } ] },
+      { id: "q2", t: "qcm", q: "Choisis le niveau de présentation qui vend le plus.", opts: ["Le niveau des yeux", "Le niveau du sol", "Au-dessus de la tête"], ok: 0, dropD: 2 },
+      { id: "q3", t: "qcm", q: "Choisis la bonne règle pour une vitrine.", opts: ["Un seul thème clair (ici : le défilé de Saint-Nicolas).", "Trois thèmes différents pour plaire à tout le monde.", "Pas de thème : on montre tout le stock."], ok: 0, dropD: 2 }
+    ]},
+    { t: "Partie 2 — Réparer la vitrine (Annexe D)", qs: [
+      { id: "q4", t: "multi", q: "Coche les 3 erreurs de la vitrine.", opts: ["Aucun prix n'est visible depuis la place.", "La vitre est sale (traces, poussière).", "Les boules en verre sont au bord d'une étagère, sans calage.", "Les coffrets sont à hauteur des yeux.", "Le décor rouge et or rappelle le défilé."], ok: [0, 1, 2] },
+      { id: "q5", t: "text", q: "Écris le slogan de l'affiche de vitrine pour le défilé : une phrase qui cite un produit ou un service de l'Office et qui donne envie.", kw: [["coffret", "boule", "mug", "magnet", "visite", "city pass", "souvenir", "calendrier", "bonnet", "polaire", "cadeau"], ["nicolas", "defile", "fete", "5 decembre", "saint-nicolas", "stanislas"]], min: 2, minLen: 25,
+        modele: "Pour le défilé du 5 décembre, offrez le coffret AvAnt Saint-Nicolas !",
+        alt: { q: "Choisis le meilleur slogan pour l'affiche de vitrine.", opts: ["« Pour le défilé du 5 décembre, offrez le coffret AvAnt Saint-Nicolas ! »", "« Produits. »", "« Entrez si vous voulez. »"], ok: 0, dropD: 1 } },
+      { id: "q6", t: "qcm", q: "Choisis ce que tu places près de la caisse.", opts: ["Des petits souvenirs d'achat d'impulsion (magnets, pin's Saint-Nicolas).", "Les boules de Noël les plus fragiles.", "Les cartons de la réserve."], ok: 0, dropD: 2 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "text", q: "🔴 Explique en une phrase pourquoi on place les coffrets « AvAnt Saint-Nicolas » à hauteur des yeux.", kw: [["yeux", "regard", "vu", "voit", "visible", "remarque"], ["vend", "achat", "achete", "acheter", "vente", "envie", "impulsion"]], min: 2, modele: "Parce que c'est le niveau que le client voit le mieux, donc celui qui fait le plus vendre." },
+    { id: "e2", t: "num", q: "🔴 Tu présentes les mugs en rang, un tous les 20 cm, sur une étagère de 1,60 m. Calcule combien tu peux en mettre.", ok: 8, tol: 0.001, unit: "mugs" }
+  ],
+  aides: { indice: "Relis le tableau des niveaux et l'encadré « Facteurs d'ambiance » de la Ressource 7. Les prix : Ressource 8.", methode: "Pour chaque phrase de l'Annexe D, demande-toi : est-ce que ça aide à vendre, à respecter la loi et à protéger le produit ?", amorce: "Pour le slogan : « Pour le défilé du …, offrez … ! »" },
+  retiens: ["Une vitrine = un thème, propre, éclairée, prix visibles de l'extérieur.", "Niveau des yeux = niveau qui vend le plus.", "Les 5 sens : vue, ouïe, odorat, toucher, goût.", "Fragile : jamais au bord, toujours calé."]
+},
+{ id: "M2.2", pole: 2, emoji: "🏷️", titre: "Étiquettes en folie", etoiles: 3, duree: 30, ressources: [8, 3], annexe: "E", comp: "C5",
+  fragment: { e: "🏷️", n: "L'étiquette d'or" },
+  mentor: "Le Père Fouettard a effacé toutes les étiquettes de la boutique ! Sans prix juste, pas de vente. Sors ta calculatrice.",
+  consignes: ["Lis la Ressource 8.", "Complète les étiquettes de l'Annexe E.", "Arrondis tes résultats au centime.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Les calculs (Annexe E)", qs: [
+      { id: "q1", t: "num", q: "Sachet de bonbons à la mirabelle, 150 g, 6,90 €. Calcule le prix au kilo (arrondi au centime).", ok: 46, tol: 0.011, unit: "€/kg", amorce: "6,90 ÷ 0,150 = …" },
+      { id: "q2", t: "num", q: "Mug Saint-Nicolas à 14,90 € TTC, TVA 20 %. Calcule le prix HT (arrondi au centime).", ok: 12.42, tol: 0.011, unit: "€", amorce: "14,90 ÷ 1,20 = …" },
+      { id: "q3", t: "num", q: "Calcule le montant de la TVA du mug (arrondi au centime).", ok: 2.48, tol: 0.011, unit: "€", amorce: "14,90 − 12,42 = …" }
+    ]},
+    { t: "Partie 2 — Les règles de l'étiquette", qs: [
+      { id: "q4", t: "qcm", q: "Choisis comment le prix doit être affiché pour les visiteurs.", opts: ["En euros, TTC, visible sans avoir à le demander.", "Hors taxes, comme pour les professionnels.", "Donné seulement si le client le demande."], ok: 0, dropD: 1 },
+      { id: "q5", t: "num", q: "Promo du week-end : −20 % sur la création « Verre'tige ». Prix le plus bas des 30 derniers jours : 39,00 €. Calcule le prix réduit à afficher.", ok: 31.2, tol: 0.011, unit: "€", amorce: "39,00 × 0,80 = …" },
+      { id: "q6", t: "multi", q: "Coche les 2 informations obligatoires sur l'étiquette prix du sachet de bonbons préemballé.", opts: ["Le prix de vente TTC", "Le prix au kilo", "Le prénom du vendeur", "Le prix payé au fournisseur"], ok: [0, 1] },
+      { id: "q7", t: "text", q: "Des Saint Nicolas en pain d'épices sont vendus SANS emballage à l'accueil. Écris comment tu informes les clients sur les allergènes.", kw: [["ecrit", "affich", "etiquette", "panneau", "pancarte", "tableau", "ecriteau", "fiche", "affiche"], ["allerg", "gluten", "ble", "lait", "oeuf", "fruits a coque"]], min: 2,
+        modele: "J'affiche par écrit, à côté du produit, la liste des allergènes donnée par le fabricant (par exemple le gluten).",
+        alt: { q: "Des Saint Nicolas en pain d'épices sont vendus SANS emballage. Choisis comment informer sur les allergènes.", opts: ["Par écrit, à côté du produit (étiquette ou tableau des allergènes).", "Seulement à l'oral, si le client demande.", "Ce n'est pas obligatoire sans emballage."], ok: 0, dropD: 1 } }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Calcule le prix HT de la création « Verre'tige » en promo (31,20 € TTC, TVA 20 %), arrondi au centime.", ok: 26, tol: 0.011, unit: "€" },
+    { id: "e2", t: "num", q: "🔴 Un lot de 2 sachets de 150 g est vendu 12,00 € (prix ⚠ RECONSTITUÉ). Calcule le prix au kilo du lot.", ok: 40, tol: 0.011, unit: "€/kg" }
+  ],
+  aides: { indice: "Toutes les formules sont dans les encadrés verts de la Ressource 8. 150 g = 0,150 kg.", methode: "Prix au kg = prix ÷ poids en kg. Prix HT = TTC ÷ 1,20. TVA = TTC − HT. −20 % = × 0,80.", amorce: "Pour l'écrit : « J'affiche par … , à côté du produit, les allergènes : … »" },
+  retiens: ["Prix en euros, TTC, visible sans demander (et visible de l'extérieur en vitrine).", "Prix au kg = prix ÷ poids en kg.", "HT = TTC ÷ (1 + taux). Souvenirs et confiseries : TVA 20 %.", "Réduction calculée sur le prix le plus bas des 30 derniers jours.", "Sans emballage : allergènes affichés par écrit."]
+},
+{ id: "M2.3", pole: 2, emoji: "🕵️", titre: "Le mystère des magnets disparus", etoiles: 3, duree: 25, ressources: [9], annexe: "F", comp: "C6",
+  fragment: { e: "🔍", n: "La loupe dorée" },
+  mentor: "Des magnets Saint-Nicolas ont disparu ! Le Père Fouettard ? Un voleur ? Une erreur ? Mène l'enquête avec la fiche de stock.",
+  consignes: ["Lis la Ressource 9.", "Utilise la fiche de stock (Annexe F).", "Calcule l'écart et sa valeur.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — L'enquête chiffrée (Annexe F)", qs: [
+      { id: "q1", t: "num", q: "Calcule le stock théorique de magnets au 6 décembre.", ok: 27, tol: 0.001, unit: "magnets", amorce: "40 + 24 − 35 − 2 = …" },
+      { id: "q2", t: "num", q: "Calcule le nombre de magnets qui manquent (stock théorique − stock compté).", ok: 4, tol: 0.001, unit: "magnets", amorce: "27 − 23 = …" },
+      { id: "q3", t: "num", q: "Calcule la valeur au prix de vente des magnets disparus (4,50 € l'un).", ok: 18, tol: 0.011, unit: "€", amorce: "4 × 4,50 = …" }
+    ]},
+    { t: "Partie 2 — Comprendre et agir", qs: [
+      { id: "q4", t: "cls", q: "Classe chaque situation : démarque connue ou inconnue ?", cats: ["Démarque connue", "Démarque inconnue"], items: [
+        { l: "Magnets brisés, jetés et notés sur la fiche casse", c: 0 }, { l: "Vol à l'étalage que personne n'a vu", c: 1 }, { l: "Erreur de touche en caisse non remarquée", c: 1 }, { l: "Bonbons à DLC dépassée retirés et enregistrés", c: 0 } ] },
+      { id: "q5", t: "multi", q: "Coche les 3 actions qui aident à lutter contre la démarque.", opts: ["Placer les petits produits sous le regard du personnel", "Saluer chaque visiteur qui entre", "Contrôler les livraisons à la réception", "Laisser la réserve ouverte pour gagner du temps", "Ne jamais compter le stock"], ok: [0, 1, 2] },
+      { id: "q6", t: "qcm", q: "Choisis la définition de l'inventaire.", opts: ["Compter réellement tous les produits présents à une date donnée.", "Commander les produits qui manquent.", "Ranger la réserve par couleur."], ok: 0, dropD: 2 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Calcule le taux de démarque inconnue : écart ÷ stock théorique × 100, arrondi au dixième.", ok: 14.8, tol: 0.051, unit: "%" },
+    { id: "e2", t: "num", q: "🔴 Calcule la valeur totale de la démarque (connue + inconnue) au prix de vente.", ok: 27, tol: 0.011, unit: "€" }
+  ],
+  aides: { indice: "Stock théorique = ce qu'il DEVRAIT y avoir. Stock réel = ce qu'on a COMPTÉ.", methode: "1) Stock initial + entrées − ventes − casse. 2) Théorique − compté = manquant. 3) Manquant × prix = valeur.", amorce: "Démarque connue = on sait pourquoi et c'est noté. Inconnue = on ne sait pas pourquoi." },
+  retiens: ["Stock théorique = initial + entrées − sorties.", "Écart = compté − théorique.", "Connue : on sait et c'est enregistré. Inconnue : vol, erreur non vue.", "Inventaire = comptage réel à une date donnée."]
+},
+{ id: "M3.1", pole: 3, emoji: "🛎️", titre: "Bienvenue à Nancy !", etoiles: 2, duree: 20, ressources: [10, 1], annexe: "G", comp: "C7",
+  fragment: { e: "🕯️", n: "La lanterne de la place" },
+  mentor: "L'accueil est plein : touristes du monde entier, familles, enfants qui attendent saint Nicolas… Chaque visiteur doit se sentir attendu.",
+  consignes: ["Lis les Ressources 10 et 1.", "Utilise la grille d'accueil (Annexe G).", "Choisis, classe, reformule.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Les bons réflexes", qs: [
+      { id: "q1", t: "order", q: "Remets l'accueil dans l'ordre.", items: ["Sourire et regarder le visiteur", "Dire « Bonjour Madame / Monsieur »", "Se rendre disponible", "Poser une question ouverte", "Écouter et reformuler"] },
+      { id: "q2", t: "cls", q: "Classe chaque question : ouverte ou fermée ?", cats: ["Question ouverte", "Question fermée"], items: [
+        { l: "« Qu'aimeriez-vous découvrir à Nancy ? »", c: 0 }, { l: "« Vous avez une voiture ? »", c: 1 }, { l: "« Comment souhaitez-vous fêter la Saint-Nicolas en famille ? »", c: 0 }, { l: "« C'est pour aujourd'hui ? »", c: 1 } ] },
+      { id: "q3", t: "qcm", q: "Tu renseignes déjà un visiteur quand une autre personne entre. Choisis ta réaction.", opts: ["Je lui fais un signe et un sourire : « Bonjour, je suis à vous dans un instant ! »", "Je fais semblant de ne pas la voir.", "Je laisse mon visiteur pour m'occuper de la nouvelle personne."], ok: 0, dropD: 1 }
+    ]},
+    { t: "Partie 2 — Écouter et reformuler", qs: [
+      { id: "q4", t: "qcm", q: "Une famille de touristes néerlandais entre. Choisis la meilleure réaction (Ressource 1).", opts: ["Je les accueille avec le sourire, je propose l'anglais et je leur montre le site de l'Office en néerlandais.", "Je les ignore car je ne parle pas néerlandais.", "Je parle plus fort en français."], ok: 0, dropD: 2 },
+      { id: "q5", t: "text", q: "Reformule la demande. La cliente dit : « Je cherche une activité pas trop chère à faire avec mes enfants ce week-end, pour la Saint-Nicolas. »", kw: [["si j'ai bien compris", "si je comprends", "si j ai bien compris", "vous cherchez", "vous souhaitez", "vous voulez", "vous desirez"], ["activite", "sortie", "visite", "faire", "animation"], ["enfant", "famille", "fils", "fille"], ["prix", "cher", "budget", "petit prix", "abordable"], ["week-end", "weekend", "samedi", "dimanche", "nicolas"]], min: 3,
+        modele: "Si j'ai bien compris, vous cherchez une activité à petit prix à faire avec vos enfants ce week-end, pour la Saint-Nicolas ?",
+        alt: { q: "La cliente dit : « Je cherche une activité pas trop chère avec mes enfants ce week-end. » Choisis la bonne reformulation.", opts: ["« Si j'ai bien compris, vous cherchez une activité à petit prix avec vos enfants ce week-end ? »", "« D'accord, prenez la visite la plus chère. »", "« Vous voulez quoi ? »"], ok: 0, dropD: 2 } },
+      { id: "q6", t: "qcm", q: "Du mardi au dimanche, choisis l'heure d'ouverture de l'Office de Tourisme (Ressource 1).", opts: ["9 h 30", "8 h", "13 h"], ok: 0, dropD: 1 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "text", q: "🔴 Écris une phrase d'accueil en anglais pour un touriste.", kw: [["hello", "good morning", "good afternoon", "good evening", "hi", "welcome"], ["help", "may i", "can i", "looking for", "assist"]], min: 2, modele: "Hello, welcome to Nancy! Can I help you?" },
+    { id: "e2", t: "qcm", q: "🔴 Le visiteur répond « Je regarde seulement les dépliants ». Choisis ta réaction.", opts: ["Je le laisse regarder, je reste disponible et j'observe pour revenir au bon moment.", "Je le suis pas à pas dans l'accueil.", "Je lui dis qu'il doit acheter quelque chose."], ok: 0 }
+  ],
+  aides: { indice: "Une question ouverte appelle une phrase, une question fermée appelle « oui » ou « non ».", methode: "Reformuler = redire avec tes mots tout ce que la cliente a demandé (pour qui ? quoi ? quel prix ? quand ?) en commençant par « Si j'ai bien compris… ».", amorce: "« Si j'ai bien compris, vous cherchez une … à petit … avec vos … ce … ? »" },
+  retiens: ["Sourire, Bonjour, Au revoir, Merci.", "Question ouverte pour découvrir, reformulation pour vérifier.", "Déjà occupé·e : un signe et « je suis à vous dans un instant »."]
+},
+{ id: "M3.2", pole: 3, emoji: "🎟️", titre: "Le conseil du Grand Saint", etoiles: 3, duree: 25, ressources: [11, 3, 1], annexe: "H", comp: "C8",
+  fragment: { e: "🎟️", n: "Le billet d'or" },
+  mentor: "M. et Mme Weber hésitent depuis dix minutes devant les dépliants… Aide-les à construire leur journée idéale, honnêtement, et montre-leur comment tout réserver.",
+  consignes: ["Lis la Ressource 11.", "Lis la fiche des Weber (Annexe H).", "Conseille, argumente, calcule.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Choisir la bonne offre", qs: [
+      { id: "q1", t: "qcm", q: "Musées + tram + une visite guidée, pour 2 personnes, budget 40 € : choisis l'offre la plus adaptée (Ressource 3).", opts: ["Le Nancy City Pass 24 h Duo — 35 €", "Deux visites « Centre historique » — 2 × 10 €, sans musées ni tram", "Deux City Pass 24 h Adulte — 2 × 20 € = 40 €"], ok: 0, dropD: 1 },
+      { id: "q2", t: "qcm", q: "Ils veulent absolument la visite guidée de samedi. Choisis ce que tu leur dis.", opts: ["« La visite est incluse, mais la réservation est obligatoire dans la limite des places : je vérifie tout de suite les places disponibles. »", "« Pas besoin de réserver, venez quand vous voulez. »", "« Je ne sais pas, vous verrez sur place. »"], ok: 0, dropD: 2 },
+      { id: "q3", t: "cls", q: "Classe chaque phrase de ton argument : Caractéristique, Avantage ou Preuve ?", cats: ["Caractéristique", "Avantage", "Preuve"], items: [
+        { l: "« C'est un pass pour 2 personnes, valable 24 heures. »", c: 0 }, { l: "« Vous visitez sans compter et vous circulez librement. »", c: 1 }, { l: "« Il coûte 35 € au lieu de 40 € pour deux pass adultes. »", c: 2 }, { l: "« Il comprend les musées, les transports et une visite guidée. »", c: 0 } ] }
+    ]},
+    { t: "Partie 2 — Omnicanal et vente complémentaire", qs: [
+      { id: "q4", t: "text", q: "Les Weber préfèrent tout réserver depuis leur téléphone. Écris une solution omnicanal avec au moins 2 informations (Ressources 1 et 11).", kw: [["site", "internet", "en ligne", "web", "billetterie", "visites.nancy-tourisme", "telephone", "smartphone"], ["e-city", "city pass", "pass", "billet"], ["reserv", "visite"], ["accueil", "office", "retir", "presenter", "montrer"]], min: 2,
+        modele: "Vous pouvez acheter l'e-City Pass et réserver la visite sur la billetterie en ligne visites.nancy-tourisme.fr, puis présenter votre pass sur votre téléphone.",
+        alt: { q: "Les Weber préfèrent tout réserver depuis leur téléphone. Choisis la bonne solution.", opts: ["Acheter l'e-City Pass et réserver la visite sur la billetterie en ligne visites.nancy-tourisme.fr.", "Ce n'est pas possible : il faut tout acheter au guichet.", "Envoyer une lettre pour réserver."], ok: 0, dropD: 2 } },
+      { id: "q5", t: "qcm", q: "Ils ont choisi le pass. Choisis la vente complémentaire à proposer.", opts: ["Un souvenir de la boutique, comme la création « Verre'tige » (39 €) ou un magnet Saint-Nicolas.", "Un deuxième City Pass Duo identique.", "Rien : on ne propose jamais rien."], ok: 0, dropD: 2 },
+      { id: "q6", t: "num", q: "Calcule le total : City Pass 24 h Duo 35,00 € + création « Verre'tige » 39,00 €.", ok: 74, tol: 0.011, unit: "€", amorce: "35,00 + 39,00 = …" }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Leur fille de 17 ans les rejoint : City Pass Duo (35 €) + City Pass Jeunes (10 €). Calcule combien la famille économise par rapport à 3 City Pass Adulte (20 € l'un).", ok: 15, tol: 0.011, unit: "€" },
+    { id: "e2", t: "text", q: "🔴 Écris l'argument CAP complet en une phrase pour le City Pass Duo.", kw: [["2 personnes", "deux personnes", "duo", "24"], ["sans compter", "librement", "gratuit", "musee", "tram", "transport", "economis"], ["35", "40", "moins cher", "au lieu"]], min: 3, modele: "C'est un pass pour 2 personnes valable 24 h : vous visitez les musées et prenez le tram sans compter, pour 35 € au lieu de 40 €." }
+  ],
+  aides: { indice: "Compare ce que comprend chaque offre (Ressource 3) avec ce que veulent les Weber (Annexe H).", methode: "CAP : Caractéristique (ce que c'est) → Avantage (ce que ça apporte) → Preuve (chiffre, comparaison). Omnicanal : quel canal ? comment réserver ?", amorce: "Pour l'écrit : « Vous pouvez acheter l'… et réserver la … sur la billetterie en … , puis présenter … »" },
+  retiens: ["CAP : Caractéristique → Avantage → Preuve.", "Visites guidées : réservation obligatoire, dans la limite des places.", "Omnicanal : billetterie en ligne, e-City Pass, accueil.", "Vente complémentaire : un produit qui va avec l'achat."]
+},
+{ id: "M3.3", pole: 3, emoji: "💶", titre: "Caisse ! Et que ça brille !", etoiles: 3, duree: 25, ressources: [12], annexe: "I", comp: "C9",
+  fragment: { e: "🪙", n: "L'écu de Stanislas" },
+  mentor: "C'est le soir du défilé : la file d'attente sort sur la place ! Encaisse vite, mais sans erreur, et ferme la caisse au centime près.",
+  consignes: ["Lis la Ressource 12.", "Utilise la caisse du samedi (Annexe I).", "Calcule, rends la monnaie, applique les règles.", "Valide ta mission."],
+  parts: [
+    { t: "Partie 1 — Encaisser (Annexe I)", qs: [
+      { id: "q1", t: "num", q: "Calcule le total à payer.", ok: 69, tol: 0.011, unit: "€", amorce: "49,00 + (2 × 10,00) = …" },
+      { id: "q2", t: "num", q: "Le client paie avec un billet de 100 €. Calcule la monnaie à rendre.", ok: 31, tol: 0.011, unit: "€", amorce: "100,00 − 69,00 = …" },
+      { id: "q3", t: "qcm", q: "Choisis la façon de rendre 31 € avec le moins de billets et de pièces.", opts: ["1 billet de 20 € + 1 billet de 10 € + 1 pièce de 1 €", "3 billets de 10 € + 2 pièces de 50 c", "1 billet de 20 € + 1 billet de 10 € + 1 pièce de 50 c"], ok: 0, dropD: 2 }
+    ]},
+    { t: "Partie 2 — Les règles de la caisse", qs: [
+      { id: "q4", t: "qcm", q: "Choisis la règle du ticket de caisse depuis le 1er août 2023.", opts: ["Il est remis si le client le demande.", "Il doit toujours être imprimé.", "Il est interdit."], ok: 0, dropD: 2 },
+      { id: "q5", t: "cls", q: "Le commerçant peut-il refuser ce paiement ?", cats: ["Il peut refuser (en l'affichant pour CB/chèque)", "Il ne peut pas refuser (en principe)"], items: [
+        { l: "Carte bancaire pour un achat de moins de 5 €", c: 0 }, { l: "Chèque (l'accueil a affiché qu'il n'en prend pas)", c: 0 }, { l: "Un billet de 20 € (vrai billet)", c: 1 }, { l: "Un paiement avec 60 pièces de 1 centime", c: 0 } ] },
+      { id: "q6", t: "text", q: "Le client veut recevoir la newsletter des bons plans. Écris ce que tu dois lui demander avant de l'inscrire avec son e-mail.", kw: [["accord", "consent", "accepte", "accepter", "autoris", "case", "d'accord", "veut bien", "souhaite"], ["mail", "e-mail", "email", "newsletter", "publicite", "pub", "offre", "message"]], min: 2,
+        modele: "Je lui demande son accord (consentement) pour recevoir des e-mails publicitaires.",
+        alt: { q: "Le client veut la newsletter des bons plans. Choisis ce que tu dois lui demander avant de l'inscrire avec son e-mail.", opts: ["Son accord (consentement) pour recevoir des e-mails publicitaires.", "Le code de sa carte bancaire.", "Rien : on l'inscrit d'office."], ok: 0, dropD: 1 } },
+      { id: "q7", t: "qcm", q: "Choisis à quoi sert la clôture de caisse en fin de journée.", opts: ["À comparer l'argent compté avec le montant enregistré.", "À fermer la porte à clé.", "À commander les produits du lendemain."], ok: 0, dropD: 2 }
+    ]}
+  ],
+  expert: [
+    { id: "e1", t: "num", q: "🔴 Clôture (Annexe I) : fond de caisse 150,00 € + ventes en espèces 412,60 € = montant attendu. Argent compté : 560,10 €. Calcule l'écart avec son signe (ex. −3,20).", ok: -2.5, tol: 0.011, unit: "€" },
+    { id: "e2", t: "qcm", q: "🔴 Un client domicilié en France veut payer 1 200 € en espèces pour une visite de groupe. Choisis la bonne réponse.", opts: ["Impossible : le paiement en espèces est plafonné à 1 000 € pour un client domicilié en France.", "C'est possible, il n'y a aucune limite.", "C'est possible seulement en pièces."], ok: 0 }
+  ],
+  aides: { indice: "Total : multiplie d'abord, puis additionne. Monnaie : somme donnée − total.", methode: "Pour rendre la monnaie : commence par le plus gros billet possible, puis descends (billets, puis pièces). Vérifie que la somme fait bien 31 €.", amorce: "Pour l'écrit : « Je lui demande son … pour recevoir des … publicitaires. »" },
+  retiens: ["Monnaie = somme donnée − total ; je compte en remontant.", "Espèces : on ne peut pas les refuser (sauf plus de 50 pièces). CB/chèque : refus possible s'il est affiché.", "Ticket de caisse : remis sur demande depuis le 1er août 2023.", "E-mails publicitaires : accord du client obligatoire."]
+}
+];
+
+D.FINALE = { id: "MF", emoji: "🎭", titre: "Le grand oral du 5 décembre", duree: 30, ressources: [13, 10, 3], annexe: "J", comps: ["C7", "C10"],
+  fragment: { e: "👑", n: "La couronne de la grille" },
+  mentor: "Dernière épreuve avant ton contrat de saison ! Un client mécontent revient avec une boule de Noël fêlée. Ton professeur joue le client : montre-lui ce que tu sais faire.",
+  consignes: ["Lis la Ressource 13 et l'Annexe J.", "Prépare tes 5 phrases ci-dessous.", "Joue la scène (3 à 4 minutes) devant ton professeur, en binôme.", "Ton professeur saisit ta note sur 10."],
+  champs: [
+    { id: "f1", l: "1. Accueillir : ma première phrase" },
+    { id: "f2", l: "2. Écouter puis reformuler : ma phrase" },
+    { id: "f3", l: "3. M'excuser : ma phrase" },
+    { id: "f4", l: "4. Proposer une solution : ma phrase (et ce que je fais si je ne peux pas décider)" },
+    { id: "f5", l: "5. Conclure et saluer : ma phrase" }
+  ],
+  grille: [
+    { c: "Accueil et attitude (sourire, regard, calme, vouvoiement)", p: 2, comp: "C7" },
+    { c: "Écoute active et reformulation du problème", p: 2, comp: "C10" },
+    { c: "Excuse et empathie, sans accuser personne", p: 2, comp: "C10" },
+    { c: "Solution adaptée (échange ou remboursement d'un produit défectueux, ou relais à la responsable)", p: 2, comp: "C10" },
+    { c: "Conclusion, vérification de la satisfaction, prise de congé", p: 2, comp: "C7" }
+  ],
+  retiens: ["Accueillir → écouter → reformuler → s'excuser → proposer → conclure.", "Un produit défectueux : le client a des droits (garantie légale de conformité).", "Je ne peux pas décider ? Je passe le relais à ma responsable, poliment."]
+};
+
+D.DEFIS = [
+  { id: "D1", titre: "La visite de groupe", bonus: 2, q: { id: "d1", t: "num", q: "Une classe réserve 12 billets pour la visite « Sur les traces de Saint-Nicolas » à 10,00 € l'un. Calcule le montant total.", ok: 120, tol: 0.011, unit: "€" } },
+  { id: "D2", titre: "Le calendrier des Fêtes", bonus: 2, q: { id: "d2", t: "qcm", q: "Choisis la date de fin des Fêtes de Saint-Nicolas 2026 à Nancy (Ressource 2).", opts: ["Dimanche 3 janvier 2027", "Dimanche 6 décembre 2026", "Jeudi 31 décembre 2026"], ok: 0 } },
+  { id: "D3", titre: "Le mot mystère", bonus: 2, q: { id: "d3", t: "text", q: "Écris le nom du ferronnier qui a créé les grilles dorées de la place Stanislas (Ressource 2).", kw: [["lamour"]], min: 1, modele: "Jean Lamour" } }
+];
+
+D.LEXIQUE = [
+  ["Allergène", "Substance qui peut provoquer une allergie (ex. : fruits à coque, œufs, gluten)."],
+  ["Bon de commande", "Document qui liste ce que l'entreprise a demandé au fournisseur."],
+  ["Bon de livraison", "Document remis par le livreur, qui liste ce qui est livré ; on y écrit les réserves."],
+  ["Bon de préparation", "Liste des articles à prélever pour préparer la commande d'un client."],
+  ["CAP (méthode)", "Caractéristique, Avantage, Preuve : méthode pour argumenter."],
+  ["City Pass", "Pass touristique à prix forfaitaire (musées, transports, visites, réductions)."],
+  ["Click & Collect", "Commander en ligne et retirer sur place."],
+  ["Clôture de caisse", "Comparaison, en fin de journée, entre l'argent compté et le montant enregistré."],
+  ["Consentement", "Accord libre et clair d'une personne (ex. : pour recevoir des e-mails publicitaires)."],
+  ["DDM", "Date de durabilité minimale : « à consommer de préférence avant »."],
+  ["Démarque", "Perte de marchandises (connue ou inconnue)."],
+  ["DLC", "Date limite de consommation : « à consommer jusqu'au », date impérative."],
+  ["Écart d'inventaire", "Différence entre stock compté et stock théorique."],
+  ["Facteurs d'ambiance", "Éléments qui agissent sur les 5 sens du client."],
+  ["FEFO", "Premier périmé, premier sorti."],
+  ["FIFO", "Premier entré, premier sorti."],
+  ["Fond de caisse", "Argent mis dans la caisse le matin pour rendre la monnaie."],
+  ["Inventaire", "Comptage réel des produits à une date donnée."],
+  ["Merchandising", "Techniques pour présenter les produits et faire vendre."],
+  ["Office de tourisme", "Organisme qui accueille et informe les visiteurs et fait connaître une destination."],
+  ["Omnicanal", "Le client passe d'un canal de vente à l'autre (accueil, site, téléphone)."],
+  ["Prix au kilo", "Prix ramené à 1 kg, pour comparer les produits."],
+  ["Prix de référence", "Prix le plus bas pratiqué pendant les 30 jours avant une réduction."],
+  ["Prix HT / TTC", "Hors taxes / toutes taxes comprises (le client paie le TTC)."],
+  ["Protestation motivée", "Lettre recommandée au transporteur, sous 3 jours, pour un dégât non signalé."],
+  ["Question ouverte", "Question à laquelle on répond par une phrase."],
+  ["Réclamation", "Mécontentement exprimé par un client."],
+  ["Reformuler", "Redire avec ses mots la demande du client pour vérifier qu'on a compris."],
+  ["Réserve", "Remarque écrite et précise sur le bon de livraison."],
+  ["RGPD", "Règlement européen qui protège les données personnelles."],
+  ["SBAM", "Sourire, Bonjour, Au revoir, Merci."],
+  ["Stock théorique", "Stock calculé : initial + entrées − sorties."],
+  ["TVA", "Taxe sur la valeur ajoutée, payée par le client et reversée à l'État."],
+  ["Vente complémentaire", "Proposer un produit qui va avec l'achat du client."]
+];
+
+D.SOURCES = [
+  ["France Compétences — fiche RNCP40994, CAP Équipier polyvalent du commerce (publiée le 30/06/2025)", "https://www.francecompetences.fr/recherche/rncp/40994/"],
+  ["Arrêté du 29 octobre 2019 portant création du CAP « Équipier polyvalent du commerce » (JO du 21/11/2019) et ses annexes (référentiel)", "https://referentiels-professionnels.eduscol.education.fr/CAP_EPC/"],
+  ["Destination Nancy — Venir à l'office : adresse, horaires", "https://www.nancy-tourisme.fr"],
+  ["Destination Nancy — The Tourist Office Boutique", "https://www.nancy-tourisme.fr/en/to-see-to-do/shopping/the-tourist-office-boutique"],
+  ["Destination Nancy — Guide Tourisme & Handicap 2025-2026 (horaires, fermetures 25/12 et 01/01)", "https://www.nancy-tourisme.fr/app/uploads/nancy/2025/07/visite-de-la-ville-de-Nancy-2025-2026.pdf"],
+  ["Tourisme & Handicaps — Journées 2026 Nancy (marque Tourisme et Handicap, visites 10 €)", "https://tourisme-handicaps.org/wp-content/uploads/Journees-TH-2026-NANCY.pdf"],
+  ["Destination Nancy — City Pass Peignoir 2025 (fermeture des dimanches d'hiver)", "https://www.nancy-tourisme.fr/app/uploads/nancy/2025/04/A5-presentation-CityPass-Peignoir.pdf"],
+  ["Billetterie Destination Nancy — e-City Pass 24 h (20 € / Duo 35 € / Jeunes 10 €)", "https://visites.nancy-tourisme.fr/en/city-pass-numerique/city-pass/city-pass-24h-dematerialise"],
+  ["Destination Nancy — Visite « Sur les traces de Saint-Nicolas » (10 €)", "https://www.nancy-tourisme.fr/en/offers/guided-tour-in-the-footsteps-of-saint-nicolas-nancy-en-4457772"],
+  ["Destination Nancy — Visite « Centre historique » (10 €)", "https://www.nancy-tourisme.fr/ja/offers/visite-guidee-centre-historique-nancy-ja-5323325"],
+  ["La Gazette France — « Saint-Nicolas s'invite à la boutique de la place Stanislas Destination Nancy », 14/10/2026 (coffret 49 €, boules 49 € et 39 €)", "https://www.lagazettefrance.fr/article/saint-nicolas-s-invite-a-la-boutique-de-la-place-stanislas-destination-nancy"],
+  ["destination-nancy.com — L'Office aux couleurs de Saint-Nicolas (produits dérivés)", "https://destination-nancy.com/en/destination-nancy-en/the-office-de-tourisme-metropolitain-in-saint-nicolas-colors"],
+  ["France Vélo Tourisme — Destination Nancy (deux espaces boutique, Arty Shop)", "https://www.francevelotourisme.com/pratique/offices-de-tourisme/destination-nancy-office-de-tourisme"],
+  ["Fêtes de Saint-Nicolas 2026 (dates relayées depuis saint-nicolas.nancy.fr)", "https://www.festivalenfrance.com/festival/fetes-de-la-saint-nicolas-de-nancy"],
+  ["Légifrance — Code de commerce, art. L133-3", "https://www.legifrance.gouv.fr/codes/id/LEGIARTI000020899366/2009-07-25/"],
+  ["Légifrance — Code du travail, art. R4541-9", "https://www.legifrance.gouv.fr/codes/id/LEGIARTI000018492473/2026-08-05"],
+  ["DGCCRF — DLC et DDM", "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques-et-les-faq/date-limite-de-consommation-et-date-de-durabilite-minimale"],
+  ["Entreprendre.Service-Public — Affichage des prix (F34344, MAJ 02/07/2024)", "https://entreprendre.service-public.gouv.fr/vosdroits/F34344"],
+  ["DGCCRF — Annonces de réduction de prix", "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/annonces-de-reduction-de-prix-ce-que-vous-devez-savoir"],
+  ["BOFiP — TVA, produits alimentaires et confiserie (BOI-TVA-LIQ-30-10-10)", "https://bofip.impots.gouv.fr/bofip/2033-PGP.html/identifiant=BOI-TVA-LIQ-30-10-10-20121119"],
+  ["Décret n° 2015-447 du 17 avril 2015 (allergènes, denrées non préemballées)", "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000030491684"],
+  ["DGCCRF — Ticket de caisse remis sur demande (1er août 2023)", "https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques-et-les-faq/ticket-de-caisse-et-de-carte-bancaire"],
+  ["Service-Public — Paiement en espèces (F10999, vérifié le 26/06/2026)", "https://www.service-public.gouv.fr/particuliers/vosdroits/F10999"],
+  ["Entreprendre.Service-Public — Quel paiement un professionnel peut-il refuser ? (F22929)", "https://entreprendre.service-public.gouv.fr/vosdroits/F22929"],
+  ["economie.gouv.fr — Moyens de paiement obligatoires (plafond 1 000 €)", "https://www.economie.gouv.fr/entreprises/moyens-paiement-obligatoires"],
+  ["CNIL — RGPD en pratique : maîtrisez votre relation client", "https://cnil.fr/fr/rgpd-en-pratique-maitrisez-votre-relation-client"],
+  ["INC — Puis-je exiger le remboursement d'un produit acheté dans un magasin ?", "https://www.inc-conso.fr/content/puis-je-exiger-le-remboursement-dun-produit-achete-dans-un-magasin"],
+  ["INRS — Manutention manuelle (aide-mémoire juridique TJ 18)", "https://www.inrs.fr/media.html?refINRS=TJ+18"]
+];
+
+if (typeof module !== "undefined" && module.exports) module.exports = D; else root.SNM_DATA = D;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+"use strict";
+/* =====================================================================
+   LIEN DE DÉPÔT — CLASSE 1EPC (scénario Saint-Nicolas)
+   Lien Nuage apps.education.fr de CETTE commande (partage en « Dépôt de fichier »)
+   ===================================================================== */
+var LIEN_DEPOT = "https://nuage15.apps.education.fr/index.php/s/2YWsXfwqkZmjtqC";
+var CLASSE = "1EPC";
+var LYCEE = "LP Marie Marvingt, Tomblaine";
+var PROF = "Mme Isabelle LEGER";
+var SCENARIO = "SAINT-NICOLAS";
+/* Bibliothèques PDF : CDN reconnu + source de secours (versions figées) */
+var LIBS = [
+  ["https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js", "https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"],
+  ["https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js", "https://unpkg.com/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"]
+];
+/* ===================================================================== */
+var D = window.SNM_DATA, KEY = D.META.storageKey, DKEY = D.META.bilanKey;
+var PARC = { D: { n: "Découverte", e: "🟢", c: "pD" }, I: { n: "Intermédiaire", e: "🔵", c: "pI" }, E: { n: "Expert", e: "🔴", c: "pE" } };
+var C = null;      // données du carnet importé
+var B = { nom: "", prenom: "", auto: {}, missions: {} }; // brouillon
+var AIDES = ["aucune", "indice", "méthode", "amorce"];
+var AIDE_R = { "": "—", seul: "seul·e", camarade: "avec un camarade", prof: "avec le prof" };
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function fmt(x) { return x == null ? "—" : (Math.round(x * 100) / 100).toString().replace(".", ","); }
+function r2h(x) { return Math.round(x * 2) / 2; }
+function pad(n) { return (n < 10 ? "0" : "") + n; }
+
+/* ---------- import ---------- */
+function importCarnet() {
+  try { var raw = localStorage.getItem(KEY); if (raw) C = JSON.parse(raw); } catch (e) { C = null; }
+  try { var d = localStorage.getItem(DKEY); if (d) B = Object.assign(B, JSON.parse(d)); } catch (e) {}
+}
+function saveDraft() { try { localStorage.setItem(DKEY, JSON.stringify(B)); } catch (e) {} }
+function P() { return C && C.parcours ? C.parcours : "I"; }
+function mState(id) { return C && C.missions && C.missions[id] ? C.missions[id] : { tries: 0, best: 0, aide: 0, validated: false, bilan: {} }; }
+function statut(id) { var s = mState(id); if (s.validated) return "✅"; if (s.tries > 0) return "🟠"; return "❌"; }
+function fragTxt(id) { var s = mState(id); if (!s.tries) return "—"; if (s.best >= 10) return "doré"; if (s.best >= 5) return "argent"; return "terne"; }
+function oral() { return C && C.finale && C.finale.noteOrale != null ? Number(C.finale.noteOrale) : null; }
+
+/* ---------- règle CPro (identique au dossier prof) ----------
+   moyenne des points (sur 10) des missions liées faites (+ note orale pour les compétences orales)
+   × 2, arrondie au demi-point ; NE si aucune donnée ;
+   Découverte : plafonnée à 15,5 ; Expert : +1 (20 max).                                         */
+function cpro(comp) {
+  var vals = [], det = [];
+  comp.missions.forEach(function (mid) { var s = mState(mid); if (s.tries > 0) { vals.push(s.best); det.push(mid + " : " + fmt(s.best) + "/10"); } else det.push(mid + " : pas faite"); });
+  if (comp.oral) { var o = oral(); if (o != null) { vals.push(o); det.push("Oral MF : " + fmt(o) + "/10"); } else det.push("Oral MF : non noté"); }
+  if (!vals.length) return { code: "NE", note: null, brut: null, adj: "", det: det };
+  var brut = r2h(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length * 2), note = brut, adj = "";
+  if (P() === "D" && brut > 15.5) { note = 15.5; adj = "plafond Découverte (15,5)"; } else if (P() === "D") adj = "Découverte (plafond 15,5)";
+  if (P() === "E") { note = Math.min(20, brut + 1); adj = "Expert +1"; }
+  return { code: code(note), note: note, brut: brut, adj: adj, det: det };
+}
+function code(n) { if (n == null) return "NE"; if (n < 10) return "TI"; if (n <= 13) return "I"; if (n <= 15.5) return "S"; return "TS"; }
+function total() { var t = 0; D.MISSIONS.forEach(function (m) { var s = mState(m.id); if (s.tries > 0) t += s.best; }); if (oral() != null) t += oral(); return t; }
+function bonus() { var b = 0; if (C && C.defis) D.DEFIS.forEach(function (d) { if (C.defis[d.id] && C.defis[d.id].ok) b += d.bonus; }); return b; }
+function grade(p) { var g = D.GRADES[0]; D.GRADES.forEach(function (x) { if (p >= x.min) g = x; }); return g; }
+
+/* ---------- rendu ---------- */
+function render() {
+  $("h-lycee").textContent = LYCEE; $("h-prof").textContent = PROF;
+  var ib = $("import-box");
+  if (C) ib.innerHTML = '<h2>✅ Carnet importé</h2><p>J\'ai retrouvé le carnet de <b>' + esc((C.eleve || {}).prenom || "?") + '</b> sur cet appareil (dernière activité : ' + esc(C.updated ? new Date(C.updated).toLocaleString("fr-FR") : "—") + '). Points, essais, aides, parcours et bilans de mission sont repris automatiquement.</p><button class="btn ghost" id="btn-import-json">📂 Importer un autre fichier de sauvegarde (.json)</button>';
+  else ib.innerHTML = '<h2>⚠ Aucun carnet trouvé sur cet appareil</h2><p>Ouvre ce rapport <b>sur le même appareil et le même navigateur</b> que ton carnet, ou importe ton fichier de sauvegarde (bouton 💾 du carnet).</p><button class="btn red" id="btn-import-json">📂 Importer mon fichier de sauvegarde (.json)</button>';
+  var el = (C && C.eleve) || {};
+  $("b-nom").value = B.nom || el.nom || ""; $("b-prenom").value = B.prenom || el.prenom || ""; B.nom = $("b-nom").value; B.prenom = $("b-prenom").value;
+  $("b-classe").value = CLASSE; var d = new Date(); $("b-date").value = d.toLocaleDateString("fr-FR");
+  $("b-parcours").innerHTML = C && C.parcours ? '<span class="pill ' + PARC[P()].c + '">' + PARC[P()].e + " " + PARC[P()].n + '</span> ' + (C.parcoursValide ? "(validé par le professeur)" : "(⚠ pas encore validé par le professeur)") : "— (aucun carnet importé)";
+  // missions
+  var h = '<table class="t"><tr><th>Mission</th><th>Statut</th><th>Ce que j\'ai fait</th><th>Comment</th><th>Aide reçue</th><th>Points</th></tr>';
+  D.MISSIONS.concat([{ id: "MF", titre: D.FINALE.titre }]).forEach(function (m) {
+    var isF = m.id === "MF", s = isF ? ((C && C.finale) || {}) : mState(m.id), bl = s.bilan || {}, dr = B.missions[m.id] || {};
+    var st = isF ? (s.validated ? (oral() != null ? "✅" : "🟠") : "❌") : statut(m.id);
+    var pts = isF ? (oral() != null ? fmt(oral()) + "/10" : "—") : (s.tries ? fmt(s.best) + "/10" : "—");
+    var ar = dr.aideRecue != null ? dr.aideRecue : (bl.aideRecue || "");
+    h += '<tr><td><b>' + m.id + '</b> ' + esc(m.titre) + (isF ? "" : '<br><span class="small">essais : ' + s.tries + ' · aide : ' + AIDES[s.aide || 0] + '</span>') + '</td><td style="font-size:1.3em">' + st + '</td>' +
+      '<td><textarea data-m="' + m.id + '" data-k="fait">' + esc(dr.fait != null ? dr.fait : (bl.fait || "")) + '</textarea></td>' +
+      '<td><textarea data-m="' + m.id + '" data-k="comment">' + esc(dr.comment != null ? dr.comment : (bl.comment || "")) + '</textarea></td>' +
+      '<td><select data-m="' + m.id + '" data-k="aideRecue">' + ["", "seul", "camarade", "prof"].map(function (x) { return '<option value="' + x + '"' + (ar === x ? " selected" : "") + '>' + AIDE_R[x] + '</option>'; }).join("") + '</select></td><td><b>' + pts + '</b></td></tr>';
+  });
+  $("b-missions").innerHTML = h + '</table>';
+  // compétences
+  var smi = [["TI", "😟", "pas encore"], ["I", "😐", "avec de l'aide"], ["S", "🙂", "seul·e"], ["TS", "🤩", "je peux l'expliquer"]];
+  var hc = '<table class="t"><tr><th>Bloc</th><th>Compétence (libellé du référentiel)</th><th>Mon auto-positionnement</th><th>Positionnement proposé</th><th>Validation du prof</th></tr>';
+  D.COMPETENCES.forEach(function (c) {
+    var r = cpro(c), mine = B.auto[c.id] != null ? B.auto[c.id] : ((C && C.autoEval && C.autoEval[c.id]) || "");
+    hc += '<tr><td>' + c.bloc + '</td><td>' + esc(c.lib) + '<br><span class="small">' + r.det.map(esc).join(" · ") + '</span></td><td><div class="smiley">' + smi.map(function (x) { return '<label><input type="radio" name="auto-' + c.id + '" value="' + x[0] + '"' + (mine === x[0] ? " checked" : "") + '>' + x[1] + ' ' + x[2] + '</label>'; }).join("") + '</div></td>' +
+      '<td><span class="cpro c-' + r.code + '">' + r.code + '</span> ' + (r.note != null ? fmt(r.note) + "/20" : "") + (r.adj ? '<br><span class="small">' + esc(r.adj) + '</span>' : "") + '</td><td></td></tr>';
+  });
+  $("b-comps").innerHTML = hc + '</table><p class="small">Échelle CPro : TI (0 à 9,5/20) · I (10 à 13) · S (13,5 à 15,5) · TS (16 à 20) · NE (non évaluable). A et PA : réservés au professeur.</p>';
+  var t = total(), b = bonus(), g = grade(t + b);
+  $("b-score").innerHTML = "⭐ <b>" + fmt(t) + " / 100</b>" + (b ? " + " + b + " points bonus" : "") + " — grade : " + g.e + " " + esc(g.n);
+}
+function bindInputs() {
+  document.addEventListener("input", function (ev) {
+    var t = ev.target;
+    if (t.id === "b-nom") B.nom = t.value; else if (t.id === "b-prenom") B.prenom = t.value;
+    else if (t.getAttribute("data-m")) { var m = t.getAttribute("data-m"); B.missions[m] = B.missions[m] || {}; B.missions[m][t.getAttribute("data-k")] = t.value; }
+    saveDraft();
+  });
+  document.addEventListener("change", function (ev) {
+    var t = ev.target;
+    if (t.name && t.name.indexOf("auto-") === 0) B.auto[t.name.slice(5)] = t.value;
+    else if (t.getAttribute("data-m")) { var m = t.getAttribute("data-m"); B.missions[m] = B.missions[m] || {}; B.missions[m][t.getAttribute("data-k")] = t.value; }
+    saveDraft();
+  });
+}
+
+/* ---------- PDF ---------- */
+function loadScript(src) { return new Promise(function (ok, ko) { var s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); }); }
+function loadLibs() {
+  if (window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API && window.jspdf.jsPDF.API.autoTable) return Promise.resolve();
+  return LIBS.reduce(function (p, pair) { return p.then(function () { return loadScript(pair[0]).catch(function () { return loadScript(pair[1]); }); }); }, Promise.resolve());
+}
+/* jsPDF (polices standard) : on garde le latin + les signes français usuels, on retire les emojis */
+function pdfTxt(s) { return String(s == null ? "" : s).replace(/→/g, "->").replace(/[  ]/g, " ").replace(/·/g, "-").replace(/[^\n -~ -ÿ€‘’“”…–—Œœ]/g, "").replace(/[ \t]{2,}/g, " ").trim(); }
+function noAcc(s) { return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9-]+/g, "-").replace(/^-+|-+$/g, ""); }
+function fileName() { var d = new Date(); var nom = noAcc((B.nom || "").trim()).toUpperCase(), pr = noAcc((B.prenom || "").trim()); pr = pr.charAt(0).toUpperCase() + pr.slice(1).toLowerCase(); return CLASSE + "_" + nom + "_" + pr + "_" + SCENARIO + "_" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".pdf"; }
+var COLORS = { TI: [248, 201, 201], I: [253, 226, 179], S: [205, 235, 214], TS: [143, 211, 167], NE: [221, 221, 221] };
+function buildPDF() {
+  var jsPDF = window.jspdf.jsPDF, doc = new jsPDF({ unit: "mm", format: "a4" }), W = 210, d = new Date();
+  doc.setFillColor(179, 18, 46); doc.rect(0, 0, W, 24, "F"); doc.setFillColor(217, 165, 33); doc.rect(0, 24, W, 1.6, "F");
+  doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(15); doc.text(pdfTxt("Rapport de fin de mission - Mission Saint-Nicolas"), 12, 11);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.text(pdfTxt(LYCEE + "  |  Classe " + CLASSE + "  |  " + D.META.diplome), 12, 18);
+  doc.setTextColor(40, 30, 20); doc.setFontSize(9.5);
+  var y = 31, L = [
+    ["Élève", (B.nom || "").toUpperCase() + " " + (B.prenom || "")], ["Blocs", D.META.blocs + " : " + D.BLOCS.BC01 + " / " + D.BLOCS.BC02 + " / " + D.BLOCS.BC03],
+    ["Enseigne", D.META.enseigne + " (fiction pédagogique)"], ["Date et heure", d.toLocaleDateString("fr-FR") + " à " + pad(d.getHours()) + "h" + pad(d.getMinutes())],
+    ["Professeur", PROF], ["Parcours", C && C.parcours ? PARC[P()].n + (C.parcoursValide ? " (validé par le professeur)" : " (non validé)") : "non importé"]];
+  L.forEach(function (l) { doc.setFont("helvetica", "bold"); doc.text(pdfTxt(l[0] + " :"), 12, y); doc.setFont("helvetica", "normal"); var lines = doc.splitTextToSize(pdfTxt(l[1]), 160); doc.text(lines, 40, y); y += 4.6 * lines.length; });
+  y += 2; doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(126, 12, 32); doc.text(pdfTxt("Compétences - positionnement CPro"), 12, y); doc.setTextColor(40, 30, 20);
+  var autoLib = { TI: "TI - pas encore", I: "I - avec aide", S: "S - seul(e)", TS: "TS - je peux l'expliquer", "": "-" };
+  var body = D.COMPETENCES.map(function (c) { var r = cpro(c), mine = B.auto[c.id] != null ? B.auto[c.id] : ((C && C.autoEval && C.autoEval[c.id]) || ""); return [c.bloc, pdfTxt(c.lib), pdfTxt(r.det.join("\n")), r.note == null ? "-" : pdfTxt(fmt(r.brut) + "/20" + (r.adj ? "\n" + r.adj + " -> " + fmt(r.note) : "")), r.code, pdfTxt(autoLib[mine] || "-"), ""]; });
+  doc.autoTable({ startY: y + 2, head: [["Bloc", "Compétence (référentiel)", "Missions liées (points)", "Note /20 et ajustement", "CPro", "Auto-éval.", "Validation prof"].map(pdfTxt)], body: body, theme: "grid", styles: { fontSize: 7.6, cellPadding: 1.4, valign: "middle", textColor: [40, 30, 20] }, headStyles: { fillColor: [126, 12, 32], textColor: 255, fontSize: 7.6 },
+    columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 46 }, 2: { cellWidth: 34 }, 3: { cellWidth: 28 }, 4: { cellWidth: 12, halign: "center", fontStyle: "bold" }, 5: { cellWidth: 26 }, 6: { cellWidth: 28 } }, margin: { left: 12, right: 12 },
+    didParseCell: function (data) { if (data.section === "body" && data.column.index === 4) data.cell.styles.fillColor = COLORS[data.cell.raw] || [255, 255, 255]; } });
+  y = doc.lastAutoTable.finalY + 4; doc.setFontSize(7.6); doc.setFont("helvetica", "normal");
+  var leg = doc.splitTextToSize(pdfTxt("Légende CPro : TI = 0 à 9,5/20 - I = 10 à 13/20 - S = 13,5 à 15,5/20 - TS = 16 à 20/20 - NE = non évaluable - A (absent) et PA (pas applicable) réservés au professeur. Règle : moyenne des points des missions liées faites (+ note orale pour les compétences évaluées à l'oral), x 2, arrondie au demi-point ; Découverte plafonnée à 15,5 ; Expert +1 (20 max)."), 186);
+  doc.text(leg, 12, y); y += leg.length * 3.3 + 3;
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(126, 12, 32); doc.text(pdfTxt("Missions"), 12, y); doc.setTextColor(40, 30, 20);
+  var mb = D.MISSIONS.map(function (m) { var s = mState(m.id); return [m.id, pdfTxt(m.titre), { "✅": "validée", "🟠": "commencée", "❌": "pas faite" }[statut(m.id)], s.tries ? fmt(s.best) + "/10" : "-", String(s.tries || 0), pdfTxt(AIDES[s.aide || 0]), pdfTxt(fragTxt(m.id))]; });
+  mb.push(["MF", pdfTxt(D.FINALE.titre), C && C.finale && C.finale.validated ? (oral() != null ? "validée" : "préparée") : "pas faite", oral() != null ? fmt(oral()) + "/10" : "-", "oral", "-", oral() != null ? (oral() >= 10 ? "doré" : oral() >= 5 ? "argent" : "terne") : "-"]);
+  doc.autoTable({ startY: y + 2, head: [["N°", "Mission", "Statut", "Points", "Essais", "Aide la plus forte", "Fragment"].map(pdfTxt)], body: mb, theme: "grid", styles: { fontSize: 7.8, cellPadding: 1.3 }, headStyles: { fillColor: [28, 47, 94], textColor: 255 }, margin: { left: 12, right: 12 } });
+  y = doc.lastAutoTable.finalY + 5; var t = total(), b = bonus(), g = grade(t + b);
+  if (y > 270) { doc.addPage(); y = 18; }
+  doc.setFillColor(253, 236, 204); doc.roundedRect(12, y - 4, 186, 10, 2, 2, "F"); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  doc.text(pdfTxt("Score : " + fmt(t) + " / 100" + (b ? " (+" + b + " points bonus)" : "") + "   -   Grade : " + g.n), 15, y + 2.5);
+  y += 12;
+  var bil = D.MISSIONS.concat([{ id: "MF", titre: D.FINALE.titre }]).map(function (m) { var isF = m.id === "MF", s = isF ? ((C && C.finale) || {}) : mState(m.id), bl = s.bilan || {}, dr = B.missions[m.id] || {}; return [m.id, pdfTxt(dr.fait != null ? dr.fait : (bl.fait || "")), pdfTxt(dr.comment != null ? dr.comment : (bl.comment || "")), pdfTxt(AIDE_R[dr.aideRecue != null ? dr.aideRecue : (bl.aideRecue || "")] || "-")]; });
+  doc.autoTable({ startY: y, head: [["N°", "Ce que j'ai fait", "Comment je m'y suis pris(e)", "Aide reçue"].map(pdfTxt)], body: bil, theme: "grid", styles: { fontSize: 7.4, cellPadding: 1.3 }, headStyles: { fillColor: [46, 125, 79], textColor: 255 }, columnStyles: { 0: { cellWidth: 11 }, 3: { cellWidth: 26 } }, margin: { left: 12, right: 12 } });
+  var n = doc.getNumberOfPages();
+  for (var i = 1; i <= n; i++) { doc.setPage(i); doc.setFontSize(7); doc.setTextColor(120, 110, 100); doc.text(pdfTxt(fileName() + "  -  page " + i + "/" + n + "  -  Document pédagogique, sans lien avec l'enseigne"), 12, 290); }
+  return doc;
+}
+function needName() { if (!(B.nom || "").trim() || !(B.prenom || "").trim()) { msg("ko", "✏️ Écris ton nom ET ton prénom (partie 1) avant de créer ton PDF."); $("b-nom").focus(); return true; } return false; }
+function msg(cls, html) { $("b-msg").innerHTML = '<div class="msg ' + cls + '">' + html + '</div>'; }
+function makePDF() { if (needName()) return Promise.reject("nom"); msg("wa", "⏳ Création du PDF…"); return loadLibs().then(function () { return buildPDF(); }); }
+$("btn-pdf").addEventListener("click", function () { makePDF().then(function (doc) { doc.save(fileName()); msg("ok", "✅ PDF créé : <b>" + esc(fileName()) + "</b>. Maintenant, clique sur 📤 Envoyer à mon prof."); }).catch(function (e) { if (e !== "nom") msg("ko", "❌ Impossible de charger l'outil PDF (connexion ?). Réessaie dans un instant."); }); });
+
+/* ---------- envoi au Nuage (WebDAV) avec repli ---------- */
+function shareInfo() { var m = LIEN_DEPOT.match(/^(https:\/\/[^\/]+)\/(?:index\.php\/)?s\/([A-Za-z0-9]+)/); return m ? { host: m[1], token: m[2] } : null; }
+function timeoutFetch(url, opt, ms) { var ctl = typeof AbortController !== "undefined" ? new AbortController() : null; if (ctl) opt.signal = ctl.signal; var t = setTimeout(function () { if (ctl) ctl.abort(); }, ms); return fetch(url, opt).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; }); }
+function tryWebDAV(blob, name) {
+  var si = shareInfo(); if (!si) return Promise.reject("lien");
+  var u1 = si.host + "/public.php/dav/files/" + si.token + "/" + encodeURIComponent(name);
+  var u2 = si.host + "/public.php/webdav/" + encodeURIComponent(name);
+  return timeoutFetch(u1, { method: "PUT", body: blob, headers: { "X-Requested-With": "XMLHttpRequest", "Content-Type": "application/pdf" } }, 9000)
+    .then(function (r) { if (r.ok) return r; throw new Error("HTTP " + r.status); })
+    .catch(function () { return timeoutFetch(u2, { method: "PUT", body: blob, headers: { "X-Requested-With": "XMLHttpRequest", "Authorization": "Basic " + btoa(si.token + ":"), "Content-Type": "application/pdf" } }, 9000).then(function (r) { if (r.ok) return r; throw new Error("HTTP " + r.status); }); });
+}
+$("btn-send").addEventListener("click", function () {
+  if (needName()) return;
+  /* onglet ouvert tout de suite (pendant le clic) pour ne pas être bloqué par le navigateur */
+  var popup = null; try { popup = window.open("", "_blank"); if (popup) popup.document.write('<p style="font-family:sans-serif;font-size:20px;padding:20px">⏳ Envoi de ton rapport en cours… ne ferme pas cet onglet.</p>'); } catch (e) { popup = null; }
+  makePDF().then(function (doc) {
+    var name = fileName(), blob = doc.output("blob");
+    msg("wa", "⏳ Envoi direct sur le Nuage de ton professeur…");
+    return tryWebDAV(blob, name).then(function () {
+      if (popup) try { popup.close(); } catch (e) {}
+      msg("ok", "✅ C'est envoyé ! Ton professeur a reçu <b>" + esc(name) + "</b> sur son Nuage. Bravo " + esc(B.prenom) + " !");
+    }, function () {
+      doc.save(name);
+      if (popup && !popup.closed) { try { popup.location.href = LIEN_DEPOT; } catch (e) {} } else { popup = window.open(LIEN_DEPOT, "_blank"); }
+      msg("wa", "📥 Ton PDF <b>" + esc(name) + "</b> vient d'être téléchargé.<br>👉 <b>Glisse ton fichier ici puis clique sur Envoyer</b> : <a class=\"btn red\" id=\"lnk-depot\" href=\"" + esc(LIEN_DEPOT) + "\" target=\"_blank\" rel=\"noopener\">📂 Ouvrir le dépôt de mon prof</a><br>✅ Quand le Nuage affiche ton fichier, c'est bon : ton professeur l'a reçu.");
+    });
+  }).catch(function (e) { if (popup) try { popup.close(); } catch (x) {} if (e !== "nom") msg("ko", "❌ Impossible de créer le PDF (connexion ?). Réessaie."); });
+});
+
+/* ---------- effacer ---------- */
+var clearArm = false;
+$("btn-clear").addEventListener("click", function () {
+  if (!clearArm) { clearArm = true; $("btn-clear").textContent = "⚠ Clique encore pour confirmer"; setTimeout(function () { clearArm = false; $("btn-clear").textContent = "🗑️ Effacer mes réponses"; }, 4000); return; }
+  try { localStorage.removeItem(DKEY); } catch (e) {} B = { nom: "", prenom: "", auto: {}, missions: {} }; clearArm = false; $("btn-clear").textContent = "🗑️ Effacer mes réponses"; render(); msg("ok", "🗑️ Brouillon effacé : les données du carnet ont été réimportées.");
+});
+document.addEventListener("click", function (ev) { if (ev.target && ev.target.id === "btn-import-json") $("file-json").click(); });
+$("file-json").addEventListener("change", function (ev) { var f = ev.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { try { C = JSON.parse(r.result); render(); msg("ok", "✅ Fichier de sauvegarde importé."); } catch (e) { msg("ko", "❌ Fichier illisible."); } }; r.readAsText(f); });
+
+importCarnet(); render(); bindInputs();
+$("foot").innerHTML = "Mon rapport de fin de mission · Mission Saint-Nicolas · version " + D.META.version + " du " + D.META.date + " · " + esc(PROF) + " · " + esc(LYCEE);
+window.__BILAN = { cpro: cpro, buildPDF: buildPDF, loadLibs: loadLibs, fileName: fileName, get B() { return B; }, get C() { return C; }, LIEN_DEPOT: LIEN_DEPOT };
+</script>
+</body>
+</html>
